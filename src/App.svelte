@@ -83,18 +83,32 @@
 			},
 			body: uiStatus.submissionValue,
 		})
-			.then((response) => response.json())
-			.then((data) => {
-				fetchedPosts = data;
+			.then((response) => {
+				if (!response.ok) {
+					uiStatus.isErrorMessageOpen = true;
+					return response.text();
+				} else {
+					uiStatus.isErrorMessageOpen = false;
+					return response.json();
+				}
 			})
+			.then((data) => {
+				if (uiStatus.isErrorMessageOpen) {
+					uiStatus.errorMessageText = data;
+				} else {
+					fetchedPosts = data;
+				}
+			})
+			// unexpected error in request
 			.catch((error) => {
+				console.log("we catch");
 				console.log(error);
-				return [];
 			});
 
 		grecaptcha.reset();
 		captchaResponse = "";
 
+		uiStatus.errorMessageText = "";
 		uiStatus.submissionValue = "";
 		uiStatus.submissionInvalid = false;
 		uiStatus.invalidText = "";
@@ -107,6 +121,8 @@
 	let uiStatus = {
 		isSideNavOpen: false,
 		isLearnMoreOpen: false,
+		isErrorMessageOpen: false,
+		errorMessageText: "",
 		submissionValue: "",
 		submissionInvalid: false,
 		invalidText: "",
@@ -296,6 +312,13 @@ https://github.com/carbon-design-system/carbon-components-svelte/issues/786
 			write a book!
 		</p>
 		<p>Remember to have fun, and enjoy using Accent!</p>
+	</Modal>
+	<Modal
+		passiveModal
+		bind:open={uiStatus.isErrorMessageOpen}
+		modalHeading="Error posting"
+	>
+		<p>{uiStatus.errorMessageText}</p>
 	</Modal>
 </Content>
 
