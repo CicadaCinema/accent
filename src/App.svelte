@@ -120,7 +120,7 @@
 
 	let uiStatus = {
 		isSideNavOpen: false,
-		isLearnMoreOpen: false,
+		isLearnMoreOpen: true,
 		isErrorMessageOpen: false,
 		errorMessageText: "",
 		submissionValue: "",
