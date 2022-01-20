@@ -32,17 +32,17 @@
         fetch(`${BACKEND_BASE_URL}/api/vote`, {
             method: "POST",
             headers: {
-                "vote-action": action ? "like" : "dislike",
                 "x-real-ip": "1.2.3.4",
             },
-            body: targetId.toString(),
+            body: JSON.stringify({postId: targetId, voteAction: action}),
         })
             .then((response) => {
                 uiStatus.voteStatus = 2;
             })
             .catch((error) => {
+                // TODO: what should happen here?
                 console.log(error);
-                return [];
+                return;
             });
     }
 
@@ -58,11 +58,12 @@
             headers: {
                 "captcha-token": captchaResponse,
                 "x-real-ip": "1.2.3.4",
-                "reply-id": uiStatus.postSelected
-                    ? uiStatus.selectedId.toString()
-                    : "",
             },
-            body: uiStatus.submissionValue,
+            body: JSON.stringify(!uiStatus.postSelected
+                ? {postContent: uiStatus.submissionValue} : {
+                    postContent: uiStatus.submissionValue,
+                    replyId: uiStatus.selectedId
+                }),
         })
             .then((response) => {
                 if (!response.ok) {
@@ -82,8 +83,9 @@
             })
             // unexpected error in request
             .catch((error) => {
-                console.log("we catch");
+                // TODO: what should happen here?
                 console.log(error);
+                return;
             });
 
         grecaptcha.reset();
@@ -177,7 +179,7 @@ https://github.com/carbon-design-system/carbon-components-svelte/issues/786
 		}}
     />
     <Grid>
-        {#each fetchedPosts as {PostContent, Id, Path}}
+        {#each fetchedPosts as {postContent, id, path}}
             <Row
                     style="margin: 0.5rem; outline: 1px solid var(--cds-interactive-04)"
             >
@@ -185,13 +187,13 @@ https://github.com/carbon-design-system/carbon-components-svelte/issues/786
                 <!-- https://en.wikipedia.org/wiki/Arrow_(symbol) -->
                 <Column>
                     <h4 style="margin-top: 0.6rem; margin-bottom: 0.6rem;">
-                        {"▎".repeat(Math.max(Path.split("/").length - 3, 0)) +
-                        (Path.split("/").length > 2 ? "↳ " : " ") +
-                        PostContent}
+                        {"▎".repeat(Math.max(path.split("/").length - 3, 0)) +
+                        (path.split("/").length > 2 ? "↳ " : " ") +
+                        postContent}
                     </h4>
                 </Column>
                 <Column sm={1} md={1} lg={1}>
-                    {#if uiStatus.voteStatus === 1 && uiStatus.voteId === Id && uiStatus.voteAction}
+                    {#if uiStatus.voteStatus === 1 && uiStatus.voteId === id && uiStatus.voteAction}
                         <Loading
                                 style="margin-top: 1rem; margin-left: 1rem;"
                                 withOverlay={false}
@@ -203,16 +205,16 @@ https://github.com/carbon-design-system/carbon-components-svelte/issues/786
                                 kind="ghost"
                                 iconDescription="Like"
                                 icon={uiStatus.voteStatus === 2 &&
-							uiStatus.voteId === Id &&
+							uiStatus.voteId === id &&
 							uiStatus.voteAction
 								? ThumbsUpFilled16
 								: ThumbsUp16}
-                                on:click={() => voteButtonCallback(true, Id)}
+                                on:click={() => voteButtonCallback(true, id)}
                         />
                     {/if}
                 </Column>
                 <Column sm={1} md={1} lg={1}>
-                    {#if uiStatus.voteStatus === 1 && uiStatus.voteId === Id && !uiStatus.voteAction}
+                    {#if uiStatus.voteStatus === 1 && uiStatus.voteId === id && !uiStatus.voteAction}
                         <Loading
                                 style="margin-top: 1rem; margin-left: 1rem;"
                                 withOverlay={false}
@@ -224,11 +226,11 @@ https://github.com/carbon-design-system/carbon-components-svelte/issues/786
                                 kind="ghost"
                                 iconDescription="Dislike"
                                 icon={uiStatus.voteStatus === 2 &&
-							uiStatus.voteId === Id &&
+							uiStatus.voteId === id &&
 							!uiStatus.voteAction
 								? ThumbsDownFilled16
 								: ThumbsDown16}
-                                on:click={() => voteButtonCallback(false, Id)}
+                                on:click={() => voteButtonCallback(false, id)}
                         />
                     {/if}
                 </Column>
@@ -236,19 +238,19 @@ https://github.com/carbon-design-system/carbon-components-svelte/issues/786
                     <Button
                             kind="ghost"
                             isSelected={uiStatus.postSelected &&
-							uiStatus.selectedId === Id}
+							uiStatus.selectedId === id}
                             iconDescription="Reply"
                             icon={Reply16}
                             on:click={() => {
 							if (
 								uiStatus.postSelected &&
-								uiStatus.selectedId === Id
+								uiStatus.selectedId === id
 							) {
 								uiStatus.postSelected = false;
 								uiStatus.selectedId = 0;
 							} else {
 								uiStatus.postSelected = true;
-								uiStatus.selectedId = Id;
+								uiStatus.selectedId = id;
 							}
 						}}
                     />

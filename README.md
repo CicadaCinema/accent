@@ -1,3 +1,3 @@
 # Accent
 
-### Compatible with Dialect Server v0.2.1
+### Compatible with Dialect Server v0.3.0
