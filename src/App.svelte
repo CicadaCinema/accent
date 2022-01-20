@@ -191,7 +191,7 @@ https://github.com/carbon-design-system/carbon-components-svelte/issues/786
                     </h4>
                 </Column>
                 <Column sm={1} md={1} lg={1}>
-                    {#if uiStatus.voteStatus == 1 && uiStatus.voteId == Id && uiStatus.voteAction}
+                    {#if uiStatus.voteStatus === 1 && uiStatus.voteId === Id && uiStatus.voteAction}
                         <Loading
                                 style="margin-top: 1rem; margin-left: 1rem;"
                                 withOverlay={false}
@@ -199,11 +199,11 @@ https://github.com/carbon-design-system/carbon-components-svelte/issues/786
                         />
                     {:else}
                         <Button
-                                disabled={uiStatus.voteStatus == 2}
+                                disabled={uiStatus.voteStatus === 2}
                                 kind="ghost"
                                 iconDescription="Like"
-                                icon={uiStatus.voteStatus == 2 &&
-							uiStatus.voteId == Id &&
+                                icon={uiStatus.voteStatus === 2 &&
+							uiStatus.voteId === Id &&
 							uiStatus.voteAction
 								? ThumbsUpFilled16
 								: ThumbsUp16}
@@ -212,7 +212,7 @@ https://github.com/carbon-design-system/carbon-components-svelte/issues/786
                     {/if}
                 </Column>
                 <Column sm={1} md={1} lg={1}>
-                    {#if uiStatus.voteStatus == 1 && uiStatus.voteId == Id && !uiStatus.voteAction}
+                    {#if uiStatus.voteStatus === 1 && uiStatus.voteId === Id && !uiStatus.voteAction}
                         <Loading
                                 style="margin-top: 1rem; margin-left: 1rem;"
                                 withOverlay={false}
@@ -220,11 +220,11 @@ https://github.com/carbon-design-system/carbon-components-svelte/issues/786
                         />
                     {:else}
                         <Button
-                                disabled={uiStatus.voteStatus == 2}
+                                disabled={uiStatus.voteStatus === 2}
                                 kind="ghost"
                                 iconDescription="Dislike"
-                                icon={uiStatus.voteStatus == 2 &&
-							uiStatus.voteId == Id &&
+                                icon={uiStatus.voteStatus === 2 &&
+							uiStatus.voteId === Id &&
 							!uiStatus.voteAction
 								? ThumbsDownFilled16
 								: ThumbsDown16}
@@ -236,13 +236,13 @@ https://github.com/carbon-design-system/carbon-components-svelte/issues/786
                     <Button
                             kind="ghost"
                             isSelected={uiStatus.postSelected &&
-							uiStatus.selectedId == Id}
+							uiStatus.selectedId === Id}
                             iconDescription="Reply"
                             icon={Reply16}
                             on:click={() => {
 							if (
 								uiStatus.postSelected &&
-								uiStatus.selectedId == Id
+								uiStatus.selectedId === Id
 							) {
 								uiStatus.postSelected = false;
 								uiStatus.selectedId = 0;
@@ -259,8 +259,7 @@ https://github.com/carbon-design-system/carbon-components-svelte/issues/786
     <div
             class="g-recaptcha"
             data-sitekey="6LfsPJcaAAAAAEIjBdsIiCNLkEUNGxXmcfRHgT6K"
-            data-callback="userVerified"
-    />
+            data-callback="userVerified"></div>
     <Button on:click={submitButtonCallback}>
         {uiStatus.postSelected ? "Reply" : "Submit"}
     </Button>
