@@ -9,7 +9,7 @@
     import ThumbsDownFilled16 from "carbon-icons-svelte/lib/ThumbsDownFilled16";
     import Reply16 from "carbon-icons-svelte/lib/Reply16";
 
-    import {Button, Column, Content, Grid, Loading, Modal, Row, TextInput,} from "carbon-components-svelte";
+    import {Button, Column, Content, Grid, Loading, Modal, Row, TextInput, Tile,} from "carbon-components-svelte";
 
     // require this so that the captcha can find the userVerified function
     // https://stackoverflow.com/questions/59546779/
@@ -103,7 +103,7 @@
 
     let uiStatus = {
         isSideNavOpen: false,
-        isLearnMoreOpen: true,
+        isLearnMoreOpen: false,
         isErrorMessageOpen: false,
         errorMessageText: "",
         submissionValue: "",
@@ -162,6 +162,9 @@ https://github.com/carbon-design-system/carbon-components-svelte/issues/786
 -->
 
 <Content>
+    <Tile style="margin-bottom: 2rem;">
+        <marquee><h3>Make a post - see a post!</h3></marquee>
+    </Tile>
     <TextInput
             light
             labelText="Enter note"
@@ -186,12 +189,14 @@ https://github.com/carbon-design-system/carbon-components-svelte/issues/786
                 <!-- https://en.wikipedia.org/wiki/Block_Elements -->
                 <!-- https://en.wikipedia.org/wiki/Arrow_(symbol) -->
                 <Column>
-                    <h4 style="margin-top: 0.6rem; margin-bottom: 0.6rem;">
-                        {"▎".repeat(Math.max(path.split("/").length - 3, 0)) +
+                    <h4 class="text-post">
+                        {"⠀".repeat(Math.max(path.split("/").length - 3, 0)) +
                         (path.split("/").length > 2 ? "↳ " : " ") +
                         postContent}
                     </h4>
+
                 </Column>
+                <!-- TODO: try https://carbon-svelte.vercel.app/components/InlineLoading -->
                 <Column sm={1} md={1} lg={1}>
                     {#if uiStatus.voteStatus === 1 && uiStatus.voteId === id && uiStatus.voteAction}
                         <Loading
@@ -266,14 +271,14 @@ https://github.com/carbon-design-system/carbon-components-svelte/issues/786
         {uiStatus.postSelected ? "Reply" : "Submit"}
     </Button>
 
-    <Button kind="tertiary" on:click={() => (uiStatus.isLearnMoreOpen = true)}>
+    <Button kind="tertiary" on:click={() => {uiStatus.isLearnMoreOpen = true}}>
         Learn more
     </Button>
 
     <Modal
             passiveModal
             bind:open={uiStatus.isLearnMoreOpen}
-            modalHeading="How does it work?"
+            modalHeading="Learn more"
     >
         <p>Accent is a fun website! Here's how to use it:</p>
         <p>1) Think of a profound message you want the world to know.</p>
@@ -296,6 +301,16 @@ https://github.com/carbon-design-system/carbon-components-svelte/issues/786
         </p>
         <p>Remember to have fun, and enjoy using Accent!</p>
     </Modal>
+    <!--
+    <Modal
+            passiveModal
+            modalHeading="How does it work?"
+            open={true}>
+        <p>
+            Make a post - see a post!
+        </p>
+    </Modal>
+    -->
     <Modal
             passiveModal
             bind:open={uiStatus.isErrorMessageOpen}
@@ -309,5 +324,10 @@ https://github.com/carbon-design-system/carbon-components-svelte/issues/786
     .g-recaptcha {
         margin-top: 2rem;
         margin-bottom: 2rem;
+    }
+
+    .text-post {
+        margin-top: 0.6rem;
+        margin-bottom: 0.6rem;
     }
 </style>
