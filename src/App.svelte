@@ -9,7 +9,7 @@
     import ThumbsDownFilled16 from "carbon-icons-svelte/lib/ThumbsDownFilled16";
     import Reply16 from "carbon-icons-svelte/lib/Reply16";
 
-    import {Button, Column, Content, Grid, Loading, Modal, Row, TextInput, Tile,} from "carbon-components-svelte";
+    import {Button, Column, Content, Grid, InlineLoading, Modal, Row, TextInput, Tile} from "carbon-components-svelte";
 
     // require this so that the captcha can find the userVerified function
     // https://stackoverflow.com/questions/59546779/
@@ -181,11 +181,9 @@ https://github.com/carbon-design-system/carbon-components-svelte/issues/786
 			}
 		}}
     />
-    <Grid>
+    <Grid style="padding:0;">
         {#each fetchedPosts as {postContent, id, path}}
-            <Row
-                    style="margin: 0.5rem; outline: 1px solid var(--cds-interactive-04)"
-            >
+            <Row style="flex-wrap: nowrap; margin: 0.5rem; outline: 1px solid var(--cds-interactive-04);">
                 <!-- https://en.wikipedia.org/wiki/Block_Elements -->
                 <!-- https://en.wikipedia.org/wiki/Arrow_(symbol) -->
                 <Column>
@@ -196,57 +194,43 @@ https://github.com/carbon-design-system/carbon-components-svelte/issues/786
                     </h4>
 
                 </Column>
-                <!-- TODO: try https://carbon-svelte.vercel.app/components/InlineLoading -->
-                <Column sm={1} md={1} lg={1}>
-                    {#if uiStatus.voteStatus === 1 && uiStatus.voteId === id && uiStatus.voteAction}
-                        <Loading
-                                style="margin-top: 1rem; margin-left: 1rem;"
-                                withOverlay={false}
-                                small
-                        />
-                    {:else}
-                        <Button
-                                disabled={uiStatus.voteStatus === 2}
-                                kind="ghost"
-                                iconDescription="Like"
-                                icon={uiStatus.voteStatus === 2 &&
+                {#if uiStatus.voteStatus === 1 && uiStatus.voteId === id && uiStatus.voteAction}
+                    <InlineLoading style="padding-right: 0.5rem; padding-left: 1rem; width:auto;"/>
+                {:else}
+                    <Button
+                            disabled={uiStatus.voteStatus === 2}
+                            kind="ghost"
+                            iconDescription="Like"
+                            icon={uiStatus.voteStatus === 2 &&
 							uiStatus.voteId === id &&
 							uiStatus.voteAction
 								? ThumbsUpFilled16
 								: ThumbsUp16}
-                                on:click={() => voteButtonCallback(true, id)}
-                        />
-                    {/if}
-                </Column>
-                <Column sm={1} md={1} lg={1}>
-                    {#if uiStatus.voteStatus === 1 && uiStatus.voteId === id && !uiStatus.voteAction}
-                        <Loading
-                                style="margin-top: 1rem; margin-left: 1rem;"
-                                withOverlay={false}
-                                small
-                        />
-                    {:else}
-                        <Button
-                                disabled={uiStatus.voteStatus === 2}
-                                kind="ghost"
-                                iconDescription="Dislike"
-                                icon={uiStatus.voteStatus === 2 &&
+                            on:click={() => voteButtonCallback(true, id)}
+                    />
+                {/if}
+                {#if uiStatus.voteStatus === 1 && uiStatus.voteId === id && !uiStatus.voteAction}
+                    <InlineLoading style="padding-right: 0.5rem; padding-left: 1rem; width:auto;"/>
+                {:else}
+                    <Button
+                            disabled={uiStatus.voteStatus === 2}
+                            kind="ghost"
+                            iconDescription="Dislike"
+                            icon={uiStatus.voteStatus === 2 &&
 							uiStatus.voteId === id &&
 							!uiStatus.voteAction
 								? ThumbsDownFilled16
 								: ThumbsDown16}
-                                on:click={() => voteButtonCallback(false, id)}
-                        />
-                    {/if}
-                </Column>
-                <Column sm={1} md={1} lg={1}>
-                    <Button
-                            kind="ghost"
-                            isSelected={uiStatus.postSelected &&
+                            on:click={() => voteButtonCallback(false, id)}
+                    />
+                {/if}
+                <Button
+                        kind="ghost"
+                        isSelected={uiStatus.postSelected &&
 							uiStatus.selectedId === id}
-                            iconDescription="Reply"
-                            icon={Reply16}
-                            on:click={() => {
+                        iconDescription="Reply"
+                        icon={Reply16}
+                        on:click={() => {
 							if (
 								uiStatus.postSelected &&
 								uiStatus.selectedId === id
@@ -258,8 +242,7 @@ https://github.com/carbon-design-system/carbon-components-svelte/issues/786
 								uiStatus.selectedId = id;
 							}
 						}}
-                    />
-                </Column>
+                />
             </Row>
         {/each}
     </Grid>
