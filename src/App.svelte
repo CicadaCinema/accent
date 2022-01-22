@@ -187,17 +187,18 @@ https://github.com/carbon-design-system/carbon-components-svelte/issues/786
                 <!-- https://en.wikipedia.org/wiki/Block_Elements -->
                 <!-- https://en.wikipedia.org/wiki/Arrow_(symbol) -->
                 <Column>
-                    <h4 class="text-post">
+                    <p class="text-post">
                         {"⠀".repeat(Math.max(path.split("/").length - 3, 0)) +
                         (path.split("/").length > 2 ? "↳ " : " ") +
                         postContent}
-                    </h4>
+                    </p>
 
                 </Column>
                 {#if uiStatus.voteStatus === 1 && uiStatus.voteId === id && uiStatus.voteAction}
                     <InlineLoading style="padding-right: 0.5rem; padding-left: 1rem; width:auto;"/>
                 {:else}
                     <Button
+                            style="padding-left: 0.8rem; padding-right: 0.8rem;"
                             disabled={uiStatus.voteStatus === 2}
                             kind="ghost"
                             iconDescription="Like"
@@ -213,6 +214,7 @@ https://github.com/carbon-design-system/carbon-components-svelte/issues/786
                     <InlineLoading style="padding-right: 0.5rem; padding-left: 1rem; width:auto;"/>
                 {:else}
                     <Button
+                            style="padding-left: 0.8rem; padding-right: 0.8rem;"
                             disabled={uiStatus.voteStatus === 2}
                             kind="ghost"
                             iconDescription="Dislike"
@@ -225,6 +227,7 @@ https://github.com/carbon-design-system/carbon-components-svelte/issues/786
                     />
                 {/if}
                 <Button
+                        style="padding-left: 0.8rem; padding-right: 0.8rem;"
                         kind="ghost"
                         isSelected={uiStatus.postSelected &&
 							uiStatus.selectedId === id}
