@@ -31,9 +31,6 @@
 
         fetch(`${BACKEND_BASE_URL}/api/vote`, {
             method: "POST",
-            headers: {
-                "x-real-ip": "1.2.3.4",
-            },
             body: JSON.stringify({postId: targetId, voteAction: action}),
         })
             .then((response) => {
@@ -57,7 +54,6 @@
             method: "POST",
             headers: {
                 "captcha-token": captchaResponse,
-                "x-real-ip": "1.2.3.4",
             },
             body: JSON.stringify(!uiStatus.postSelected
                 ? {postContent: uiStatus.submissionValue} : {
