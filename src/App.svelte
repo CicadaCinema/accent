@@ -29,8 +29,11 @@
         uiStatus.voteId = targetId;
         uiStatus.voteStatus = 1;
 
-        fetch(`${BACKEND_BASE_URL}/api/vote`, {
+        fetch(`${BACKEND_BASE_URL}/vote`, {
             method: "POST",
+            headers: {
+                "content-type": "application/json",
+            },
             body: JSON.stringify({postId: targetId, voteAction: action}),
         })
             .then((response) => {
@@ -50,10 +53,11 @@
             return;
         }
 
-        fetch(`${BACKEND_BASE_URL}/api/post`, {
+        fetch(`${BACKEND_BASE_URL}/post`, {
             method: "POST",
             headers: {
                 "captcha-token": captchaResponse,
+                "content-type": "application/json",
             },
             body: JSON.stringify(!uiStatus.postSelected
                 ? {postContent: uiStatus.submissionValue} : {
