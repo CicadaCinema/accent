@@ -251,7 +251,7 @@ https://github.com/carbon-design-system/carbon-components-svelte/issues/786
     </Grid>
     <div
             class="g-recaptcha"
-            data-sitekey="6LfsPJcaAAAAAEIjBdsIiCNLkEUNGxXmcfRHgT6K"
+            data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
             data-callback="userVerified"></div>
     <Button on:click={submitButtonCallback}>
         {uiStatus.postSelected ? "Reply" : "Submit"}
