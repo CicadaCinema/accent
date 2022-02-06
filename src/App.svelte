@@ -217,9 +217,4 @@ https://github.com/carbon-design-system/carbon-components-svelte/issues/786
         margin-top: 2rem;
         margin-bottom: 2rem;
     }
-
-    .text-post {
-        margin-top: 0.6rem;
-        margin-bottom: 0.6rem;
-    }
 </style>

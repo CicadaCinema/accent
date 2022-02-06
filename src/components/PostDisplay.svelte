@@ -102,3 +102,10 @@
         </Row>
     {/each}
 </Grid>
+
+<style>
+    .text-post {
+        margin-top: 0.6rem;
+        margin-bottom: 0.6rem;
+    }
+</style>
