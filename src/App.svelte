@@ -26,7 +26,7 @@
             return;
         }
 
-        fetch(`${BACKEND_BASE_URL}/post`, {
+        fetch(`${BACKEND_BASE_URL}/api/post`, {
             method: "POST",
             headers: {
                 "captcha-token": captchaResponse,

@@ -16,7 +16,7 @@
         uiStatus.voteId = targetId;
         uiStatus.voteStatus = 1;
 
-        fetch(`${BACKEND_BASE_URL}/vote`, {
+        fetch(`${BACKEND_BASE_URL}/api/vote`, {
             method: "POST",
             headers: {
                 "content-type": "application/json",
