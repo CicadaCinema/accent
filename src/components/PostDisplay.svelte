@@ -9,7 +9,7 @@
 
     export let fetchedPosts;
     export let uiStatus;
-    export let BACKEND_BASE_URL;
+    export let BACKEND_BASE_URL: string;
 
     function voteButtonCallback(action: boolean, targetId: number) {
         uiStatus.voteAction = action;
