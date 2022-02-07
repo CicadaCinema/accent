@@ -40,7 +40,8 @@
                 }),
         })
             .then((response) => {
-                uiStatus.isErrorMessageOpen = !response.ok
+                fetchedPosts = [];
+                uiStatus.isErrorMessageOpen = !response.ok;
                 if (!response.ok) {
                     return response.text();
                 } else {
