@@ -40,11 +40,10 @@
                 }),
         })
             .then((response) => {
+                uiStatus.isErrorMessageOpen = !response.ok
                 if (!response.ok) {
-                    uiStatus.isErrorMessageOpen = true;
                     return response.text();
                 } else {
-                    uiStatus.isErrorMessageOpen = false;
                     return response.json();
                 }
             })
