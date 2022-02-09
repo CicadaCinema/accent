@@ -134,7 +134,7 @@ https://github.com/carbon-design-system/carbon-components-svelte/issues/786
 			}
 		}}
     />
-    <PostDisplay fetchedPosts={fetchedPosts} uiStatus={uiStatus} BACKEND_BASE_URL={BACKEND_BASE_URL}/>
+    <PostDisplay fetchedPosts={fetchedPosts} bind:uiStatus={uiStatus} BACKEND_BASE_URL={BACKEND_BASE_URL}/>
     <Button on:click={() => uiStatus.isCaptchaOpen = true}>
         {uiStatus.postSelected ? "Reply" : "Submit"}
     </Button>
