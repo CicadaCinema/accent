@@ -1,36 +1,17 @@
 <script lang="ts">
-    import {onDestroy, onMount} from "svelte";
-
     import "carbon-components-svelte/css/all.css";
     import {Button, Content, Modal, TextInput, Tile} from "carbon-components-svelte";
 
     import PostDisplay from "./components/PostDisplay.svelte";
     import LearnMore from "./components/LearnMore.svelte";
+    import Captcha from "./components/Captcha.svelte";
 
-    // require this so that the captcha can find the userVerified function
-    // https://stackoverflow.com/questions/59546779/
-    onMount(() => {
-        window.userVerified = userVerified;
-    });
-    onDestroy(() => {
-        window.userVerified = null;
-    });
-
-    function userVerified() {
-        captchaResponse = grecaptcha.getResponse();
-    }
-
-    function submitButtonCallback() {
-        if (captchaResponse == "") {
-            uiStatus.submissionInvalid = true;
-            uiStatus.invalidText = "Please complete the captcha";
-            return;
-        }
-
+    function triggerSubmission(event) {
+        uiStatus.isCaptchaOpen = false;
         fetch(`${BACKEND_BASE_URL}/api/post`, {
             method: "POST",
             headers: {
-                "captcha-token": captchaResponse,
+                "captcha-token": event.detail.captchaResponse,
                 "content-type": "application/json",
             },
             body: JSON.stringify(!uiStatus.postSelected
@@ -62,9 +43,6 @@
                 return;
             });
 
-        grecaptcha.reset();
-        captchaResponse = "";
-
         uiStatus.errorMessageText = "";
         uiStatus.submissionValue = "";
         uiStatus.submissionInvalid = false;
@@ -79,6 +57,7 @@
         isSideNavOpen: false,
         isLearnMoreOpen: false,
         isErrorMessageOpen: false,
+        isCaptchaOpen: false,
         errorMessageText: "",
         submissionValue: "",
         submissionInvalid: false,
@@ -156,11 +135,7 @@ https://github.com/carbon-design-system/carbon-components-svelte/issues/786
 		}}
     />
     <PostDisplay fetchedPosts={fetchedPosts} uiStatus={uiStatus} BACKEND_BASE_URL={BACKEND_BASE_URL}/>
-    <div
-            class="g-recaptcha"
-            data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
-            data-callback="userVerified"></div>
-    <Button on:click={submitButtonCallback}>
+    <Button on:click={() => uiStatus.isCaptchaOpen = true}>
         {uiStatus.postSelected ? "Reply" : "Submit"}
     </Button>
 
@@ -186,11 +161,5 @@ https://github.com/carbon-design-system/carbon-components-svelte/issues/786
     >
         <p>{uiStatus.errorMessageText}</p>
     </Modal>
+    <Captcha on:message={triggerSubmission} isCaptchaOpen={uiStatus.isCaptchaOpen}/>
 </Content>
-
-<style>
-    .g-recaptcha {
-        margin-top: 2rem;
-        margin-bottom: 2rem;
-    }
-</style>
