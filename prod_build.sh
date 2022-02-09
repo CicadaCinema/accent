@@ -13,9 +13,13 @@ sed_replacement_recaptcha_site_key_change+=$2
 sed_replacement_recaptcha_site_key_change+='/g'
 
 cp src/App.svelte src/App.svelte.bak
+cp src/components/Captcha.svelte src/components/Captcha.svelte.bak
 
 sed -i "$sed_replacement_base_url_change" src/App.svelte
-sed -i "$sed_replacement_recaptcha_site_key_change" src/App.svelte
+sed -i "$sed_replacement_recaptcha_site_key_change" src/components/Captcha.svelte
 
 diff src/App.svelte src/App.svelte.bak
+diff src/components/Captcha.svelte src/components/Captcha.svelte.bak
+
 rm src/App.svelte.bak
+rm src/components/Captcha.svelte.bak
