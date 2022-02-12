@@ -39,6 +39,7 @@
             .then((data) => {
                 uiStatus.isPostLoading = false;
                 uiStatus.postSubmitVisibility = true;
+                uiStatus.isSubmitDisabled = true;
                 if (uiStatus.isErrorMessageOpen) {
                     uiStatus.errorMessageText = data;
                 } else {
@@ -65,6 +66,7 @@
         isErrorMessageOpen: false,
         isCaptchaOpen: false,
         isPostLoading: false,
+        isSubmitDisabled: false,
         errorMessageText: "",
         submissionValue: "",
         voteStatus: 0,
@@ -133,9 +135,11 @@ https://github.com/carbon-design-system/carbon-components-svelte/issues/786
         <div
                 in:fade="{{ duration: 15000 }}"
                 out:fly="{{ y: -500, duration: 1200, easing:expoOut }}"
+                on:introend="{() => uiStatus.isSubmitDisabled=false}"
         >
             <PostSubmit
                     isReply={uiStatus.isPostSelected}
+                    isDisabled={uiStatus.isSubmitDisabled}
                     bind:isCaptchaOpen={uiStatus.isCaptchaOpen}
                     bind:submissionText={uiStatus.submissionValue}
                     bind:isLearnMoreOpen={uiStatus.isLearnMoreOpen}

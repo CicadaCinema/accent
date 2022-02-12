@@ -5,6 +5,7 @@
     export let isCaptchaOpen: boolean;
     export let submissionText: string;
     export let isLearnMoreOpen: boolean;
+    export let isDisabled: boolean;
 
     let submissionInvalid = false;
     let submissionInvalidText = "";
@@ -33,7 +34,10 @@
 		}}
 />
 
-<Button on:click={submitButtonCallback}>
+<Button
+        disabled={isDisabled || submissionInvalid}
+        on:click={submitButtonCallback}
+>
     {isReply ? "Reply" : "Submit"}
 </Button>
 
