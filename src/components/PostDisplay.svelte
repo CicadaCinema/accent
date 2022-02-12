@@ -11,7 +11,7 @@
     import {Button, Column, Grid, InlineLoading, Row} from "carbon-components-svelte";
 
     export let fetchedPosts;
-    export let uiStatus;
+    export let uiStatus; // TODO: only export uiStatus.voteAction uiStatus.voteId and uiStatus.voteStatus
     export let BACKEND_BASE_URL: string;
 
     let isShaking = false;
@@ -95,19 +95,19 @@
                     <Button
                             style="padding-left: 0.8rem; padding-right: 0.8rem;"
                             kind="ghost"
-                            isSelected={uiStatus.postSelected &&
+                            isSelected={uiStatus.isPostSelected &&
 							uiStatus.selectedId === id}
                             iconDescription="Reply"
                             icon={Reply16}
                             on:click={() => {
 							if (
-								uiStatus.postSelected &&
+								uiStatus.isPostSelected &&
 								uiStatus.selectedId === id
 							) {
-								uiStatus.postSelected = false;
+								uiStatus.isPostSelected = false;
 								uiStatus.selectedId = 0;
 							} else {
-								uiStatus.postSelected = true;
+								uiStatus.isPostSelected = true;
 								uiStatus.selectedId = id;
 							}
 						}}

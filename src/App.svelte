@@ -1,20 +1,27 @@
 <script lang="ts">
+    import {fade, fly} from 'svelte/transition';
+    import {expoOut} from "svelte/easing";
+
     import "carbon-components-svelte/css/all.css";
-    import {Button, Content, Modal, TextInput, Tile} from "carbon-components-svelte";
+    import {Content, Modal, SkeletonText, Tile} from "carbon-components-svelte";
 
     import PostDisplay from "./components/PostDisplay.svelte";
     import LearnMore from "./components/LearnMore.svelte";
     import Captcha from "./components/Captcha.svelte";
+    import PostSubmit from "./components/PostSubmit.svelte";
 
     function triggerSubmission(event) {
         uiStatus.isCaptchaOpen = false;
+        uiStatus.postSubmitVisibility = false;
+        uiStatus.isPostLoading = true;
+
         fetch(`${BACKEND_BASE_URL}/api/post`, {
             method: "POST",
             headers: {
                 "captcha-token": event.detail.captchaResponse,
                 "content-type": "application/json",
             },
-            body: JSON.stringify(!uiStatus.postSelected
+            body: JSON.stringify(!uiStatus.isPostSelected
                 ? {postContent: uiStatus.submissionValue} : {
                     postContent: uiStatus.submissionValue,
                     replyId: uiStatus.selectedId
@@ -30,6 +37,8 @@
                 }
             })
             .then((data) => {
+                uiStatus.isPostLoading = false;
+                uiStatus.postSubmitVisibility = true;
                 if (uiStatus.isErrorMessageOpen) {
                     uiStatus.errorMessageText = data;
                 } else {
@@ -45,23 +54,19 @@
 
         uiStatus.errorMessageText = "";
         uiStatus.submissionValue = "";
-        uiStatus.submissionInvalid = false;
-        uiStatus.invalidText = "";
         uiStatus.voteStatus = 0;
         uiStatus.voteId = 0;
-        uiStatus.postSelected = false;
+        uiStatus.isPostSelected = false;
         uiStatus.selectedId = 0;
     }
 
     let uiStatus = {
-        isSideNavOpen: false,
         isLearnMoreOpen: false,
         isErrorMessageOpen: false,
         isCaptchaOpen: false,
+        isPostLoading: false,
         errorMessageText: "",
         submissionValue: "",
-        submissionInvalid: false,
-        invalidText: "",
         voteStatus: 0,
         // 0 - no vote
         // 1 - vote loading
@@ -70,8 +75,9 @@
         voteAction: false,
         // false - dislike
         // true - like
-        postSelected: false,
+        isPostSelected: false,
         selectedId: 0,
+        postSubmitVisibility: true,
     };
 
     let fetchedPosts = [];
@@ -118,32 +124,26 @@ https://github.com/carbon-design-system/carbon-components-svelte/issues/786
     <Tile style="margin-bottom: 2rem;">
         <marquee><h3>Make a post - see a post!</h3></marquee>
     </Tile>
-    <TextInput
-            light
-            labelText="Enter note"
-            placeholder="Think of something interesting..."
-            bind:value={uiStatus.submissionValue}
-            bind:invalid={uiStatus.submissionInvalid}
-            bind:invalidText={uiStatus.invalidText}
-            on:input={() => {
-			if (uiStatus.submissionValue.length > 140) {
-				uiStatus.submissionInvalid = true;
-				uiStatus.invalidText = `Character limit exceeded: ${uiStatus.submissionValue.length}/140`;
-			} else if (uiStatus.submissionInvalid) {
-				uiStatus.submissionInvalid = false;
-			}
-		}}
-    />
-    <PostDisplay fetchedPosts={fetchedPosts} bind:uiStatus={uiStatus} BACKEND_BASE_URL={BACKEND_BASE_URL}/>
-    <Button on:click={() => uiStatus.isCaptchaOpen = true}>
-        {uiStatus.postSelected ? "Reply" : "Submit"}
-    </Button>
+    {#if uiStatus.isPostLoading}
+        <SkeletonText paragraph/>
+    {:else}
+        <PostDisplay fetchedPosts={fetchedPosts} bind:uiStatus={uiStatus} BACKEND_BASE_URL={BACKEND_BASE_URL}/>
+    {/if}
+    {#if uiStatus.postSubmitVisibility}
+        <div
+                in:fade="{{ duration: 15000 }}"
+                out:fly="{{ y: -500, duration: 1200, easing:expoOut }}"
+        >
+            <PostSubmit
+                    isReply={uiStatus.isPostSelected}
+                    bind:isCaptchaOpen={uiStatus.isCaptchaOpen}
+                    bind:submissionText={uiStatus.submissionValue}
+                    bind:isLearnMoreOpen={uiStatus.isLearnMoreOpen}
+            />
+        </div>
+    {/if}
 
-    <Button kind="tertiary" on:click={() => {uiStatus.isLearnMoreOpen = true}}>
-        Learn more
-    </Button>
-
-    <LearnMore isLearnMoreOpen={uiStatus.isLearnMoreOpen}/>
+    <LearnMore bind:isLearnMoreOpen={uiStatus.isLearnMoreOpen}/>
     <!--
     <Modal
             passiveModal
@@ -161,5 +161,5 @@ https://github.com/carbon-design-system/carbon-components-svelte/issues/786
     >
         <p>{uiStatus.errorMessageText}</p>
     </Modal>
-    <Captcha on:message={triggerSubmission} isCaptchaOpen={uiStatus.isCaptchaOpen}/>
+    <Captcha on:message={triggerSubmission} bind:isCaptchaOpen={uiStatus.isCaptchaOpen}/>
 </Content>
