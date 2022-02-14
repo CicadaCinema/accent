@@ -61,7 +61,6 @@
                 isShaking = true;
             }}"
     >
-        <p>`DEBUG ## voteAction {voteAction} ### voteId {voteId} ### voteStatus {voteStatus}`</p>
         <Grid style="padding:0;">
             {#each fetchedPosts as {postContent, id, path}}
                 <Row style="flex-wrap: nowrap; margin: 0.5rem; outline: 1px solid var(--cds-interactive-04);">
