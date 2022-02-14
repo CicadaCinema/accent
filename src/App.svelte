@@ -11,10 +11,6 @@
     import PostSubmit from "./components/PostSubmit.svelte";
 
     function triggerSubmission(event) {
-        uiStatus.isCaptchaOpen = false;
-        uiStatus.postSubmitVisibility = false;
-        uiStatus.isPostLoading = true;
-
         fetch(`${BACKEND_BASE_URL}/api/post`, {
             method: "POST",
             headers: {
@@ -38,7 +34,7 @@
             })
             .then((data) => {
                 uiStatus.isPostLoading = false;
-                uiStatus.postSubmitVisibility = true;
+                uiStatus.isPostSubmitVisible = true;
                 uiStatus.isSubmitDisabled = true;
                 if (uiStatus.isErrorMessageOpen) {
                     uiStatus.errorMessageText = data;
@@ -53,34 +49,38 @@
                 return;
             });
 
+        uniquePostKey = {};
         uiStatus.errorMessageText = "";
         uiStatus.submissionValue = "";
-        uiStatus.voteStatus = 0;
-        uiStatus.voteId = 0;
-        uiStatus.isPostSelected = false;
-        uiStatus.selectedId = 0;
+        uiStatus.isCaptchaOpen = false;
+        uiStatus.isPostSubmitVisible = false;
+        uiStatus.isPostLoading = true;
+    }
+
+    function updateReply(event) {
+        uiStatus.isPostSelected = event.detail.isPostSelected;
+        uiStatus.selectedId = event.detail.selectedId;
     }
 
     let uiStatus = {
+        // modals
         isLearnMoreOpen: false,
-        isErrorMessageOpen: false,
         isCaptchaOpen: false,
+        isErrorMessageOpen: false,
+        errorMessageText: "",
+
+        // visibility of elements
         isPostLoading: false,
         isSubmitDisabled: false,
-        errorMessageText: "",
+        isPostSubmitVisible: true,
+
+        // status of elements themselves
         submissionValue: "",
-        voteStatus: 0,
-        // 0 - no vote
-        // 1 - vote loading
-        // 2 - vote processed
-        voteId: 0,
-        voteAction: false,
-        // false - dislike
-        // true - like
         isPostSelected: false,
         selectedId: 0,
-        postSubmitVisibility: true,
     };
+    // enables us to reset PostDisplay component https://stackoverflow.com/a/63737335
+    let uniquePostKey = {};
 
     let fetchedPosts = [];
     let captchaResponse = "";
@@ -129,22 +129,24 @@ https://github.com/carbon-design-system/carbon-components-svelte/issues/786
     {#if uiStatus.isPostLoading}
         <SkeletonText paragraph/>
     {:else}
-        <PostDisplay fetchedPosts={fetchedPosts} bind:uiStatus={uiStatus} BACKEND_BASE_URL={BACKEND_BASE_URL}/>
+        <PostDisplay fetchedPosts={fetchedPosts} BACKEND_BASE_URL={BACKEND_BASE_URL} on:updateReply={updateReply}/>
     {/if}
-    {#if uiStatus.postSubmitVisibility}
-        <div
-                in:fade="{{ duration: 15000 }}"
-                out:fly="{{ y: -500, duration: 1200, easing:expoOut }}"
-                on:introend="{() => uiStatus.isSubmitDisabled=false}"
-        >
-            <PostSubmit
-                    isReply={uiStatus.isPostSelected}
-                    isDisabled={uiStatus.isSubmitDisabled}
-                    bind:isCaptchaOpen={uiStatus.isCaptchaOpen}
-                    bind:submissionText={uiStatus.submissionValue}
-                    bind:isLearnMoreOpen={uiStatus.isLearnMoreOpen}
-            />
-        </div>
+    {#if uiStatus.isPostSubmitVisible}
+        {#key uniquePostKey}
+            <div
+                    in:fade="{{ duration: 15000 }}"
+                    out:fly="{{ y: -500, duration: 1200, easing:expoOut }}"
+                    on:introend="{() => uiStatus.isSubmitDisabled=false}"
+            >
+                <PostSubmit
+                        isReply={uiStatus.isPostSelected}
+                        isDisabled={uiStatus.isSubmitDisabled}
+                        bind:isCaptchaOpen={uiStatus.isCaptchaOpen}
+                        bind:submissionText={uiStatus.submissionValue}
+                        bind:isLearnMoreOpen={uiStatus.isLearnMoreOpen}
+                />
+            </div>
+        {/key}
     {/if}
 
     <LearnMore bind:isLearnMoreOpen={uiStatus.isLearnMoreOpen}/>
@@ -165,5 +167,5 @@ https://github.com/carbon-design-system/carbon-components-svelte/issues/786
     >
         <p>{uiStatus.errorMessageText}</p>
     </Modal>
-    <Captcha on:message={triggerSubmission} bind:isCaptchaOpen={uiStatus.isCaptchaOpen}/>
+    <Captcha on:captchaComplete={triggerSubmission} bind:isCaptchaOpen={uiStatus.isCaptchaOpen}/>
 </Content>

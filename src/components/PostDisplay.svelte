@@ -1,4 +1,5 @@
 <script lang="ts">
+    import {createEventDispatcher} from 'svelte';
     import {fly} from 'svelte/transition';
     import {expoIn} from "svelte/easing";
 
@@ -11,15 +12,28 @@
     import {Button, Column, Grid, InlineLoading, Row} from "carbon-components-svelte";
 
     export let fetchedPosts;
-    export let uiStatus; // TODO: only export uiStatus.voteAction uiStatus.voteId and uiStatus.voteStatus
     export let BACKEND_BASE_URL: string;
 
+    const dispatch = createEventDispatcher();
+
+    function replyClicked() {
+        dispatch("updateReply", {
+            isPostSelected,
+            selectedId,
+        });
+    }
+
     let isShaking = false;
+    let voteAction = false; // false - dislike, true - like
+    let voteId = 0;
+    let voteStatus = 0; // 0 - no vote, 1 - vote loading, 2 - vote processed
+    let isPostSelected = false;
+    let selectedId = 0;
 
     function voteButtonCallback(action: boolean, targetId: number) {
-        uiStatus.voteAction = action;
-        uiStatus.voteId = targetId;
-        uiStatus.voteStatus = 1;
+        voteAction = action;
+        voteId = targetId;
+        voteStatus = 1;
 
         fetch(`${BACKEND_BASE_URL}/api/vote`, {
             method: "POST",
@@ -29,7 +43,7 @@
             body: JSON.stringify({postId: targetId, voteAction: action}),
         })
             .then((response) => {
-                uiStatus.voteStatus = 2;
+                voteStatus = 2;
             })
             .catch((error) => {
                 // TODO: what should happen here?
@@ -47,6 +61,7 @@
                 isShaking = true;
             }}"
     >
+        <p>`DEBUG ## voteAction {voteAction} ### voteId {voteId} ### voteStatus {voteStatus}`</p>
         <Grid style="padding:0;">
             {#each fetchedPosts as {postContent, id, path}}
                 <Row style="flex-wrap: nowrap; margin: 0.5rem; outline: 1px solid var(--cds-interactive-04);">
@@ -60,33 +75,33 @@
                         </p>
 
                     </Column>
-                    {#if uiStatus.voteStatus === 1 && uiStatus.voteId === id && uiStatus.voteAction}
+                    {#if voteStatus === 1 && voteId === id && voteAction}
                         <InlineLoading style="padding-right: 0.5rem; padding-left: 1rem; width:auto;"/>
                     {:else}
                         <Button
                                 style="padding-left: 0.8rem; padding-right: 0.8rem;"
-                                disabled={uiStatus.voteStatus === 2}
+                                disabled={voteStatus === 2}
                                 kind="ghost"
                                 iconDescription="Like"
-                                icon={uiStatus.voteStatus === 2 &&
-							uiStatus.voteId === id &&
-							uiStatus.voteAction
+                                icon={voteStatus === 2 &&
+							voteId === id &&
+							voteAction
 								? ThumbsUpFilled16
 								: ThumbsUp16}
                                 on:click={() => voteButtonCallback(true, id)}
                         />
                     {/if}
-                    {#if uiStatus.voteStatus === 1 && uiStatus.voteId === id && !uiStatus.voteAction}
+                    {#if voteStatus === 1 && voteId === id && !voteAction}
                         <InlineLoading style="padding-right: 0.5rem; padding-left: 1rem; width:auto;"/>
                     {:else}
                         <Button
                                 style="padding-left: 0.8rem; padding-right: 0.8rem;"
-                                disabled={uiStatus.voteStatus === 2}
+                                disabled={voteStatus === 2}
                                 kind="ghost"
                                 iconDescription="Dislike"
-                                icon={uiStatus.voteStatus === 2 &&
-							uiStatus.voteId === id &&
-							!uiStatus.voteAction
+                                icon={voteStatus === 2 &&
+							voteId === id &&
+							!voteAction
 								? ThumbsDownFilled16
 								: ThumbsDown16}
                                 on:click={() => voteButtonCallback(false, id)}
@@ -95,20 +110,20 @@
                     <Button
                             style="padding-left: 0.8rem; padding-right: 0.8rem;"
                             kind="ghost"
-                            isSelected={uiStatus.isPostSelected &&
-							uiStatus.selectedId === id}
+                            isSelected={isPostSelected &&
+							selectedId === id}
                             iconDescription="Reply"
                             icon={Reply16}
                             on:click={() => {
 							if (
-								uiStatus.isPostSelected &&
-								uiStatus.selectedId === id
+								isPostSelected &&
+								selectedId === id
 							) {
-								uiStatus.isPostSelected = false;
-								uiStatus.selectedId = 0;
+								isPostSelected = false;
+								selectedId = 0;
 							} else {
-								uiStatus.isPostSelected = true;
-								uiStatus.selectedId = id;
+								isPostSelected = true;
+								selectedId = id;
 							}
 						}}
                     />

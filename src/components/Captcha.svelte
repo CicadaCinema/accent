@@ -12,7 +12,7 @@
     });
 
     function captchaComplete() {
-        dispatch("message", {
+        dispatch("captchaComplete", {
             captchaResponse: grecaptcha.getResponse()
         });
 
