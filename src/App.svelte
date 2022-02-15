@@ -5,6 +5,7 @@
     import "carbon-components-svelte/css/all.css";
     import {Content, Modal, SkeletonText, Tile} from "carbon-components-svelte";
 
+    import {BACKEND_BASE_URL} from './Config.svelte'
     import PostDisplay from "./components/PostDisplay.svelte";
     import LearnMore from "./components/LearnMore.svelte";
     import Captcha from "./components/Captcha.svelte";
@@ -33,14 +34,33 @@
                 }
             })
             .then((data) => {
-                uiStatus.isPostLoading = false;
-                uiStatus.isPostSubmitVisible = true;
-                uiStatus.isSubmitDisabled = true;
                 if (uiStatus.isErrorMessageOpen) {
                     uiStatus.errorMessageText = data;
                 } else {
                     fetchedPosts = data;
+
+                    // stackoverflow wizardry to turn path-enumerated list into tree
+                    // https://stackoverflow.com/a/44185784
+
+                    fetchedPostTree = [];
+
+                    // from stackoverflow
+                    fetchedPosts.reduce((r, post) => {
+                        post.path.slice(1).split('/').reduce((o, id) => {
+                            var temp = (o.children = o.children || []).find(q => q.id === id);
+                            if (!temp) o.children.push(temp = {id: id, content: post.postContent});
+                            return temp;
+                        }, r);
+                        return r;
+                    }, {children: fetchedPostTree});
+                    // https://stackoverflow.com/a/59049749
+
+                    console.log(JSON.stringify(fetchedPostTree, null, 2));
                 }
+
+                uiStatus.isPostLoading = false;
+                uiStatus.isPostSubmitVisible = true;
+                uiStatus.isSubmitDisabled = true;
             })
             // unexpected error in request
             .catch((error) => {
@@ -55,6 +75,19 @@
         uiStatus.isCaptchaOpen = false;
         uiStatus.isPostSubmitVisible = false;
         uiStatus.isPostLoading = true;
+    }
+
+    function compareDepth(a, b) {
+        let aDepth = (a.path.match(/\//g) || []).length;
+        let bDepth = (b.path.match(/\//g) || []).length;
+
+        if (aDepth < bDepth) {
+            return -1;
+        }
+        if (aDepth > bDepth) {
+            return 1;
+        }
+        return 0;
     }
 
     function updateReply(event) {
@@ -79,12 +112,12 @@
         isPostSelected: false,
         selectedId: 0,
     };
-    // enables us to reset PostDisplay component https://stackoverflow.com/a/63737335
-    let uniquePostKey = {};
 
     let fetchedPosts = [];
-    let captchaResponse = "";
-    let BACKEND_BASE_URL = "http://localhost:8080";
+    let fetchedPostTree = [];
+
+    // enables us to reset PostDisplay component https://stackoverflow.com/a/63737335
+    let uniquePostKey = {};
 </script>
 
 <svelte:head>
@@ -129,7 +162,12 @@ https://github.com/carbon-design-system/carbon-components-svelte/issues/786
     {#if uiStatus.isPostLoading}
         <SkeletonText paragraph/>
     {:else}
-        <PostDisplay fetchedPosts={fetchedPosts} BACKEND_BASE_URL={BACKEND_BASE_URL} on:updateReply={updateReply}/>
+        <PostDisplay
+                fetchedPosts={fetchedPosts}
+                fetchedPostTree={fetchedPostTree}
+                BACKEND_BASE_URL={BACKEND_BASE_URL}
+                on:updateReply={updateReply}
+        />
     {/if}
     {#if uiStatus.isPostSubmitVisible}
         {#key uniquePostKey}

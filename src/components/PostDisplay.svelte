@@ -9,9 +9,12 @@
     import ThumbsDownFilled16 from "carbon-icons-svelte/lib/ThumbsDownFilled16";
     import Reply16 from "carbon-icons-svelte/lib/Reply16";
 
-    import {Button, Column, Grid, InlineLoading, Row} from "carbon-components-svelte";
+    import {Button, InlineLoading} from "carbon-components-svelte";
+
+    import PostLine from "./PostLine.svelte";
 
     export let fetchedPosts;
+    export let fetchedPostTree;
     export let BACKEND_BASE_URL: string;
 
     const dispatch = createEventDispatcher();
@@ -61,19 +64,34 @@
                 isShaking = true;
             }}"
     >
-        <Grid style="padding:0;">
+        <div class="rootDivTestChangeMe">
+            <ul>
+                <li>
+                    <PostLine
+                            bind:voteAction={voteAction}
+                            bind:voteId={voteId}
+                            bind:voteStatus={voteStatus}
+                            bind:isPostSelected={isPostSelected}
+                            bind:selectedId={selectedId}
+
+                            content={fetchedPostTree[0].content}
+                            id={fetchedPostTree[0].id}
+                            children={fetchedPostTree[0].children}
+                    />
+                </li>
+            </ul>
+
+        </div>
+        {#if false}
             {#each fetchedPosts as {postContent, id, path}}
-                <Row style="flex-wrap: nowrap; margin: 0.5rem; outline: 1px solid var(--cds-interactive-04);">
+                <div class="rootDivTestChangeMe">
                     <!-- https://en.wikipedia.org/wiki/Block_Elements -->
                     <!-- https://en.wikipedia.org/wiki/Arrow_(symbol) -->
-                    <Column>
-                        <p class="text-post">
-                            {"⠀".repeat(Math.max(path.split("/").length - 3, 0)) +
-                            (path.split("/").length > 2 ? "↳ " : " ") +
-                            postContent}
-                        </p>
-
-                    </Column>
+                    <p class="text-post">
+                        {"⠀".repeat(Math.max(path.split("/").length - 3, 0)) +
+                        (path.split("/").length > 2 ? "↳ " : " ") +
+                        postContent}
+                    </p>
                     {#if voteStatus === 1 && voteId === id && voteAction}
                         <InlineLoading style="padding-right: 0.5rem; padding-left: 1rem; width:auto;"/>
                     {:else}
@@ -126,13 +144,19 @@
 							}
 						}}
                     />
-                </Row>
+                </div>
             {/each}
-        </Grid>
+        {/if}
     </div>
 {/if}
 
 <style>
+    .rootDivTestChangeMe {
+        margin: 0.5rem;
+        border: 1px solid var(--cds-interactive-04);
+        display: flex;
+    }
+
     .text-post {
         margin-top: 0.6rem;
         margin-bottom: 0.6rem;
