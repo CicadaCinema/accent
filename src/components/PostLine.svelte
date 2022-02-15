@@ -24,57 +24,38 @@
         content={content}
         id={id}
 />
-<div class="rootDivTestChangeMe">
-    <ul>
-        {#each children as file}
-            <li>
-                {#if file.children}
-                    <svelte:self
-                            bind:voteAction={voteAction}
-                            bind:voteId={voteId}
-                            bind:voteStatus={voteStatus}
-                            bind:isPostSelected={isPostSelected}
-                            bind:selectedId={selectedId}
+<div class="parent-container">
+    {#each children as file}
+        {#if file.children}
+            <svelte:self
+                    bind:voteAction={voteAction}
+                    bind:voteId={voteId}
+                    bind:voteStatus={voteStatus}
+                    bind:isPostSelected={isPostSelected}
+                    bind:selectedId={selectedId}
 
-                            content={file.content}
-                            id={file.id}
-                            children={file.children}
-                    />
-                {:else}
-                    <PostLineElements
-                            bind:voteAction={voteAction}
-                            bind:voteId={voteId}
-                            bind:voteStatus={voteStatus}
-                            bind:isPostSelected={isPostSelected}
-                            bind:selectedId={selectedId}
+                    content={file.content}
+                    id={file.id}
+                    children={file.children}
+            />
+        {:else}
+            <PostLineElements
+                    bind:voteAction={voteAction}
+                    bind:voteId={voteId}
+                    bind:voteStatus={voteStatus}
+                    bind:isPostSelected={isPostSelected}
+                    bind:selectedId={selectedId}
 
-                            content={file.content}
-                            id={file.id}
-                    />
-                {/if}
-            </li>
-        {/each}
-    </ul>
+                    content={file.content}
+                    id={file.id}
+            />
+        {/if}
+    {/each}
 </div>
 
 <style>
-    .rootDivTestChangeMe {
-        margin: 0.5rem;
+    .parent-container {
+        margin: 0.2rem 0.5rem;
         border: 1px solid var(--cds-interactive-04);
-        display: flex;
-    }
-
-    span {
-        font-weight: bold;
-    }
-
-    ul {
-        padding: 0.2em 0 0 0.5em;
-        margin: 0 0 0 0.5em;
-        list-style: none;
-    }
-
-    li {
-        padding: 0.2em 0;
     }
 </style>

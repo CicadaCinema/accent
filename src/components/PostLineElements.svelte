@@ -45,10 +45,10 @@
 <div>
     <p>{content}</p>
     {#if voteStatus === 1 && voteId === id && voteAction}
-        <InlineLoading style="padding-right: 0.5rem; padding-left: 1rem; width:auto;"/>
+        <InlineLoading style="padding-right: 0.5rem; padding-left: 1rem; width:auto; margin-left: auto;"/>
     {:else}
         <Button
-                style="padding-left: 0.8rem; padding-right: 0.8rem;"
+                style="margin-left: auto;"
                 disabled={voteStatus === 2}
                 kind="ghost"
                 iconDescription="Like"
@@ -64,7 +64,6 @@
         <InlineLoading style="padding-right: 0.5rem; padding-left: 1rem; width:auto;"/>
     {:else}
         <Button
-                style="padding-left: 0.8rem; padding-right: 0.8rem;"
                 disabled={voteStatus === 2}
                 kind="ghost"
                 iconDescription="Dislike"
@@ -77,7 +76,6 @@
         />
     {/if}
     <Button
-            style="padding-left: 0.8rem; padding-right: 0.8rem;"
             kind="ghost"
             isSelected={isPostSelected &&
 							selectedId === id}
@@ -98,7 +96,11 @@
     />
 </div>
 <style>
+    p {
+        margin: 0.7rem 0 0 0.5rem;
+    }
+
     div {
-        display: inline-block;
+        display: flex;
     }
 </style>

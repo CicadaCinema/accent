@@ -64,27 +64,22 @@
                 isShaking = true;
             }}"
     >
-        <div class="rootDivTestChangeMe">
-            <ul>
-                <li>
-                    <PostLine
-                            bind:voteAction={voteAction}
-                            bind:voteId={voteId}
-                            bind:voteStatus={voteStatus}
-                            bind:isPostSelected={isPostSelected}
-                            bind:selectedId={selectedId}
+        <div class="parent-container">
+            <PostLine
+                    bind:voteAction={voteAction}
+                    bind:voteId={voteId}
+                    bind:voteStatus={voteStatus}
+                    bind:isPostSelected={isPostSelected}
+                    bind:selectedId={selectedId}
 
-                            content={fetchedPostTree[0].content}
-                            id={fetchedPostTree[0].id}
-                            children={fetchedPostTree[0].children}
-                    />
-                </li>
-            </ul>
-
+                    content={fetchedPostTree[0].content}
+                    id={fetchedPostTree[0].id}
+                    children={fetchedPostTree[0].children}
+            />
         </div>
         {#if false}
             {#each fetchedPosts as {postContent, id, path}}
-                <div class="rootDivTestChangeMe">
+                <div class="parent-container">
                     <!-- https://en.wikipedia.org/wiki/Block_Elements -->
                     <!-- https://en.wikipedia.org/wiki/Arrow_(symbol) -->
                     <p class="text-post">
@@ -151,10 +146,9 @@
 {/if}
 
 <style>
-    .rootDivTestChangeMe {
-        margin: 0.5rem;
+    .parent-container {
+        margin: 0.2rem 0.5rem;
         border: 1px solid var(--cds-interactive-04);
-        display: flex;
     }
 
     .text-post {
