@@ -8,33 +8,6 @@
     export let BACKEND_BASE_URL: string;
 
     let isShaking = false;
-    let voteAction = false; // false - dislike, true - like
-    let voteId = 0;
-    let voteStatus = 0; // 0 - no vote, 1 - vote loading, 2 - vote processed
-    let isPostSelected = false;
-    let selectedId = 0;
-
-    function voteButtonCallback(action: boolean, targetId: number) {
-        voteAction = action;
-        voteId = targetId;
-        voteStatus = 1;
-
-        fetch(`${BACKEND_BASE_URL}/api/vote`, {
-            method: "POST",
-            headers: {
-                "content-type": "application/json",
-            },
-            body: JSON.stringify({postId: targetId, voteAction: action}),
-        })
-            .then((response) => {
-                voteStatus = 2;
-            })
-            .catch((error) => {
-                // TODO: what should happen here?
-                console.log(error);
-                return;
-            });
-    }
 </script>
 
 {#if fetchedPostTree.length !== 0}
@@ -47,12 +20,7 @@
     >
         <div class="parent-container">
             <PostLine
-                    bind:voteAction={voteAction}
-                    bind:voteId={voteId}
-                    bind:voteStatus={voteStatus}
-                    bind:isPostSelected={isPostSelected}
-                    bind:selectedId={selectedId}
-
+                    on:voteEvent
                     content={fetchedPostTree[0].content}
                     id={fetchedPostTree[0].id}
                     children={fetchedPostTree[0].children}

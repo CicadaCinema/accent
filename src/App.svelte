@@ -11,6 +11,8 @@
     import Captcha from "./components/Captcha.svelte";
     import PostSubmit from "./components/PostSubmit.svelte";
 
+    import {voteAction, voteId, voteStatus, selectedId, submissionValue} from './stores.ts';
+
     function triggerSubmission(event) {
         fetch(`${BACKEND_BASE_URL}/api/post`, {
             method: "POST",
@@ -18,18 +20,21 @@
                 "captcha-token": event.detail.captchaResponse,
                 "content-type": "application/json",
             },
-            body: JSON.stringify(!uiStatus.isPostSelected
-                ? {postContent: uiStatus.submissionValue} : {
-                    postContent: uiStatus.submissionValue,
-                    replyId: uiStatus.selectedId
-                }),
+            body: JSON.stringify(
+                $selectedId === 0
+                    ? {postContent: $submissionValue}
+                    : {
+                        postContent: $submissionValue,
+                        replyId: Number($selectedId)
+                    }
+            ),
         })
             .then((response) => {
                 uiStatus.isErrorMessageOpen = !response.ok;
-                if (!response.ok) {
-                    return response.text();
-                } else {
+                if (response.ok) {
                     return response.json();
+                } else {
+                    return response.text();
                 }
             })
             .then((data) => {
@@ -51,6 +56,12 @@
                     // console.log(JSON.stringify(fetchedPostTree, null, 2));
                 }
 
+                // reset UI status
+                voteAction.set(false);
+                voteId.set(0);
+                voteStatus.set(0);
+                selectedId.set(0);
+
                 uiStatus.isPostLoading = false;
                 uiStatus.isPostSubmitVisible = true;
                 uiStatus.isSubmitDisabled = true;
@@ -63,11 +74,44 @@
             });
 
         uniquePostKey = {};
+        submissionValue.set("");
         uiStatus.errorMessageText = "";
-        uiStatus.submissionValue = "";
         uiStatus.isCaptchaOpen = false;
         uiStatus.isPostSubmitVisible = false;
         uiStatus.isPostLoading = true;
+    }
+
+    function performVote(event) {
+        voteAction.set(event.detail.action);
+        voteId.set(event.detail.targetId);
+        voteStatus.set(1);
+
+        fetch(`${BACKEND_BASE_URL}/api/vote`, {
+            method: "POST",
+            headers: {
+                "content-type": "application/json",
+            },
+            body: JSON.stringify({postId: Number($voteId), voteAction: $voteAction}),
+        })
+            .then((response) => {
+                uiStatus.isErrorMessageOpen = !response.ok;
+                if (response.ok) {
+                    voteStatus.set(2);
+                } else {
+                    voteStatus.set(0);
+                    return response.text();
+                }
+            })
+            .then((data) => {
+                if (uiStatus.isErrorMessageOpen) {
+                    uiStatus.errorMessageText = data;
+                }
+            })
+            .catch((error) => {
+                // TODO: what should happen here?
+                console.log(error);
+                return;
+            });
     }
 
     let uiStatus = {
@@ -81,11 +125,6 @@
         isPostLoading: false,
         isSubmitDisabled: false,
         isPostSubmitVisible: true,
-
-        // status of elements themselves
-        submissionValue: "",
-        isPostSelected: false,
-        selectedId: 0,
     };
 
     let fetchedPostTree = [];
@@ -137,6 +176,7 @@ https://github.com/carbon-design-system/carbon-components-svelte/issues/786
         <SkeletonText paragraph/>
     {:else}
         <PostDisplayParent
+                on:voteEvent={performVote}
                 fetchedPostTree={fetchedPostTree}
                 BACKEND_BASE_URL={BACKEND_BASE_URL}
         />
@@ -149,10 +189,8 @@ https://github.com/carbon-design-system/carbon-components-svelte/issues/786
                     on:introend="{() => uiStatus.isSubmitDisabled=false}"
             >
                 <PostSubmit
-                        isReply={uiStatus.isPostSelected}
                         isDisabled={uiStatus.isSubmitDisabled}
                         bind:isCaptchaOpen={uiStatus.isCaptchaOpen}
-                        bind:submissionText={uiStatus.submissionValue}
                         bind:isLearnMoreOpen={uiStatus.isLearnMoreOpen}
                 />
             </div>

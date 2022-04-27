@@ -1,9 +1,9 @@
 <script lang="ts">
     import {Button, TextInput} from "carbon-components-svelte";
 
-    export let isReply: boolean;
+    import {submissionValue, selectedId} from '../stores.ts';
+
     export let isCaptchaOpen: boolean;
-    export let submissionText: string;
     export let isLearnMoreOpen: boolean;
     export let isDisabled: boolean;
 
@@ -21,13 +21,13 @@
         light
         labelText="Enter note"
         placeholder="Think of something interesting..."
-        bind:value={submissionText}
+        bind:value={$submissionValue}
         invalid={submissionInvalid}
         invalidText={submissionInvalidText}
         on:input={() => {
-			if (submissionText.length > 140) {
+			if ($submissionValue.length > 140) {
 				submissionInvalid = true;
-				submissionInvalidText = `Character limit exceeded: ${submissionText.length}/140`;
+				submissionInvalidText = `Character limit exceeded: ${$submissionValue.length}/140`;
 			} else if (submissionInvalid) {
 				submissionInvalid = false;
 			}
@@ -38,7 +38,7 @@
         disabled={isDisabled || submissionInvalid}
         on:click={submitButtonCallback}
 >
-    {isReply ? "Reply" : "Submit"}
+    {$selectedId !== 0 ? "Reply" : "Submit"}
 </Button>
 
 <Button kind="tertiary" on:click={() => {isLearnMoreOpen = true}}>
