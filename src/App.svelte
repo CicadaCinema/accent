@@ -178,7 +178,6 @@ https://github.com/carbon-design-system/carbon-components-svelte/issues/786
         <PostDisplayParent
                 on:voteEvent={performVote}
                 fetchedPostTree={fetchedPostTree}
-                BACKEND_BASE_URL={BACKEND_BASE_URL}
         />
     {/if}
     {#if uiStatus.isPostSubmitVisible}

@@ -5,7 +5,6 @@
     import PostLine from "./PostLine.svelte";
 
     export let fetchedPostTree;
-    export let BACKEND_BASE_URL: string;
 
     let isShaking = false;
 </script>
