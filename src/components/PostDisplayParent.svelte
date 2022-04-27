@@ -1,5 +1,4 @@
 <script lang="ts">
-    import {createEventDispatcher} from 'svelte';
     import {fly} from 'svelte/transition';
     import {expoIn} from "svelte/easing";
 
@@ -7,15 +6,6 @@
 
     export let fetchedPostTree;
     export let BACKEND_BASE_URL: string;
-
-    const dispatch = createEventDispatcher();
-
-    function replyClicked() {
-        dispatch("updateReply", {
-            isPostSelected,
-            selectedId,
-        });
-    }
 
     let isShaking = false;
     let voteAction = false; // false - dislike, true - like
@@ -75,11 +65,6 @@
     .parent-container {
         margin: 0.2rem 0.5rem;
         border: 1px solid var(--cds-interactive-04);
-    }
-
-    .text-post {
-        margin-top: 0.6rem;
-        margin-bottom: 0.6rem;
     }
 
     .shaking {

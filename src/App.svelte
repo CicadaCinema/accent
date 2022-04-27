@@ -6,7 +6,7 @@
     import {Content, Modal, SkeletonText, Tile} from "carbon-components-svelte";
 
     import {BACKEND_BASE_URL} from './Config.svelte'
-    import PostDisplay from "./components/PostDisplay.svelte";
+    import PostDisplayParent from "./components/PostDisplayParent.svelte";
     import LearnMore from "./components/LearnMore.svelte";
     import Captcha from "./components/Captcha.svelte";
     import PostSubmit from "./components/PostSubmit.svelte";
@@ -25,7 +25,6 @@
                 }),
         })
             .then((response) => {
-                fetchedPostsList = [];
                 uiStatus.isErrorMessageOpen = !response.ok;
                 if (!response.ok) {
                     return response.text();
@@ -37,11 +36,10 @@
                 if (uiStatus.isErrorMessageOpen) {
                     uiStatus.errorMessageText = data;
                 } else {
-                    fetchedPostsList = data;
                     fetchedPostTree = [];
 
                     // from https://stackoverflow.com/a/59049749
-                    fetchedPostsList.reduce((r, post) => {
+                    data.reduce((r, post) => {
                         post.path.slice(1).split('/').reduce((o, id) => {
                             let temp = (o.children = o.children || []).find(q => q.id === id);
                             if (!temp) o.children.push(temp = {id: id, content: post.postContent});
@@ -50,7 +48,7 @@
                         return r;
                     }, {children: fetchedPostTree});
 
-                    console.log(JSON.stringify(fetchedPostTree, null, 2));
+                    // console.log(JSON.stringify(fetchedPostTree, null, 2));
                 }
 
                 uiStatus.isPostLoading = false;
@@ -72,11 +70,6 @@
         uiStatus.isPostLoading = true;
     }
 
-    function updateReply(event) {
-        uiStatus.isPostSelected = event.detail.isPostSelected;
-        uiStatus.selectedId = event.detail.selectedId;
-    }
-
     let uiStatus = {
         // modals
         isLearnMoreOpen: false,
@@ -95,10 +88,9 @@
         selectedId: 0,
     };
 
-    let fetchedPostsList = [];
     let fetchedPostTree = [];
 
-    // enables us to reset PostDisplay component https://stackoverflow.com/a/63737335
+    // enables us to reset PostDisplayParent component https://stackoverflow.com/a/63737335
     let uniquePostKey = {};
 </script>
 
@@ -144,10 +136,9 @@ https://github.com/carbon-design-system/carbon-components-svelte/issues/786
     {#if uiStatus.isPostLoading}
         <SkeletonText paragraph/>
     {:else}
-        <PostDisplay
+        <PostDisplayParent
                 fetchedPostTree={fetchedPostTree}
                 BACKEND_BASE_URL={BACKEND_BASE_URL}
-                on:updateReply={updateReply}
         />
     {/if}
     {#if uiStatus.isPostSubmitVisible}

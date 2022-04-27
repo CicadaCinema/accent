@@ -16,7 +16,7 @@
     export let isPostSelected;
     export let selectedId;
 
-    // TODO: maybe this can be an event that bubbles up and executes in PostDisplay?
+    // TODO: maybe this can be an event that bubbles up and executes in PostDisplayParent?
     // not sure whether doing it this way is wasteful as this component is duplicated
     // for every displayed post
     function voteButtonCallback(action: boolean, targetId: number) {
