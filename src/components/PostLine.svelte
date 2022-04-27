@@ -1,5 +1,5 @@
 <script lang="ts">
-    // copied from https://svelte.dev/tutorial/svelte-self
+    // see https://svelte.dev/tutorial/svelte-self for reference
 
     import PostLineElements from "./PostLineElements.svelte";
 
@@ -14,6 +14,7 @@
     export let selectedId;
 </script>
 
+<!-- this post's elements (text content and corresponding buttons) -->
 <PostLineElements
         bind:voteAction={voteAction}
         bind:voteId={voteId}
@@ -25,8 +26,9 @@
         id={id}
 />
 <div class="parent-container">
-    {#each children as file}
-        {#if file.children}
+    {#each children as childPost}
+        {#if childPost.children}
+            <!-- if this child has children itself, then it must be rendered recursively using PostLine -->
             <svelte:self
                     bind:voteAction={voteAction}
                     bind:voteId={voteId}
@@ -34,11 +36,12 @@
                     bind:isPostSelected={isPostSelected}
                     bind:selectedId={selectedId}
 
-                    content={file.content}
-                    id={file.id}
-                    children={file.children}
+                    content={childPost.content}
+                    id={childPost.id}
+                    children={childPost.children}
             />
         {:else}
+            <!-- otherwise, we only need to render the child's elements (text content and corresponding buttons) -->
             <PostLineElements
                     bind:voteAction={voteAction}
                     bind:voteId={voteId}
@@ -46,8 +49,8 @@
                     bind:isPostSelected={isPostSelected}
                     bind:selectedId={selectedId}
 
-                    content={file.content}
-                    id={file.id}
+                    content={childPost.content}
+                    id={childPost.id}
             />
         {/if}
     {/each}

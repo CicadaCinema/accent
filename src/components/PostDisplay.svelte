@@ -3,17 +3,8 @@
     import {fly} from 'svelte/transition';
     import {expoIn} from "svelte/easing";
 
-    import ThumbsUp16 from "carbon-icons-svelte/lib/ThumbsUp16";
-    import ThumbsUpFilled16 from "carbon-icons-svelte/lib/ThumbsUpFilled16";
-    import ThumbsDown16 from "carbon-icons-svelte/lib/ThumbsDown16";
-    import ThumbsDownFilled16 from "carbon-icons-svelte/lib/ThumbsDownFilled16";
-    import Reply16 from "carbon-icons-svelte/lib/Reply16";
-
-    import {Button, InlineLoading} from "carbon-components-svelte";
-
     import PostLine from "./PostLine.svelte";
 
-    export let fetchedPosts;
     export let fetchedPostTree;
     export let BACKEND_BASE_URL: string;
 
@@ -56,7 +47,7 @@
     }
 </script>
 
-{#if fetchedPosts.length !== 0}
+{#if fetchedPostTree.length !== 0}
     <div
             class:shaking="{isShaking}"
             in:fly="{{ y: -500, duration: 1200, easing:expoIn }}"
@@ -77,71 +68,6 @@
                     children={fetchedPostTree[0].children}
             />
         </div>
-        {#if false}
-            {#each fetchedPosts as {postContent, id, path}}
-                <div class="parent-container">
-                    <!-- https://en.wikipedia.org/wiki/Block_Elements -->
-                    <!-- https://en.wikipedia.org/wiki/Arrow_(symbol) -->
-                    <p class="text-post">
-                        {"⠀".repeat(Math.max(path.split("/").length - 3, 0)) +
-                        (path.split("/").length > 2 ? "↳ " : " ") +
-                        postContent}
-                    </p>
-                    {#if voteStatus === 1 && voteId === id && voteAction}
-                        <InlineLoading style="padding-right: 0.5rem; padding-left: 1rem; width:auto;"/>
-                    {:else}
-                        <Button
-                                style="padding-left: 0.8rem; padding-right: 0.8rem;"
-                                disabled={voteStatus === 2}
-                                kind="ghost"
-                                iconDescription="Like"
-                                icon={voteStatus === 2 &&
-							voteId === id &&
-							voteAction
-								? ThumbsUpFilled16
-								: ThumbsUp16}
-                                on:click={() => voteButtonCallback(true, id)}
-                        />
-                    {/if}
-                    {#if voteStatus === 1 && voteId === id && !voteAction}
-                        <InlineLoading style="padding-right: 0.5rem; padding-left: 1rem; width:auto;"/>
-                    {:else}
-                        <Button
-                                style="padding-left: 0.8rem; padding-right: 0.8rem;"
-                                disabled={voteStatus === 2}
-                                kind="ghost"
-                                iconDescription="Dislike"
-                                icon={voteStatus === 2 &&
-							voteId === id &&
-							!voteAction
-								? ThumbsDownFilled16
-								: ThumbsDown16}
-                                on:click={() => voteButtonCallback(false, id)}
-                        />
-                    {/if}
-                    <Button
-                            style="padding-left: 0.8rem; padding-right: 0.8rem;"
-                            kind="ghost"
-                            isSelected={isPostSelected &&
-							selectedId === id}
-                            iconDescription="Reply"
-                            icon={Reply16}
-                            on:click={() => {
-							if (
-								isPostSelected &&
-								selectedId === id
-							) {
-								isPostSelected = false;
-								selectedId = 0;
-							} else {
-								isPostSelected = true;
-								selectedId = id;
-							}
-						}}
-                    />
-                </div>
-            {/each}
-        {/if}
     </div>
 {/if}
 

@@ -25,7 +25,7 @@
                 }),
         })
             .then((response) => {
-                fetchedPosts = [];
+                fetchedPostsList = [];
                 uiStatus.isErrorMessageOpen = !response.ok;
                 if (!response.ok) {
                     return response.text();
@@ -37,23 +37,18 @@
                 if (uiStatus.isErrorMessageOpen) {
                     uiStatus.errorMessageText = data;
                 } else {
-                    fetchedPosts = data;
-
-                    // stackoverflow wizardry to turn path-enumerated list into tree
-                    // https://stackoverflow.com/a/44185784
-
+                    fetchedPostsList = data;
                     fetchedPostTree = [];
 
-                    // from stackoverflow
-                    fetchedPosts.reduce((r, post) => {
+                    // from https://stackoverflow.com/a/59049749
+                    fetchedPostsList.reduce((r, post) => {
                         post.path.slice(1).split('/').reduce((o, id) => {
-                            var temp = (o.children = o.children || []).find(q => q.id === id);
+                            let temp = (o.children = o.children || []).find(q => q.id === id);
                             if (!temp) o.children.push(temp = {id: id, content: post.postContent});
                             return temp;
                         }, r);
                         return r;
                     }, {children: fetchedPostTree});
-                    // https://stackoverflow.com/a/59049749
 
                     console.log(JSON.stringify(fetchedPostTree, null, 2));
                 }
@@ -75,19 +70,6 @@
         uiStatus.isCaptchaOpen = false;
         uiStatus.isPostSubmitVisible = false;
         uiStatus.isPostLoading = true;
-    }
-
-    function compareDepth(a, b) {
-        let aDepth = (a.path.match(/\//g) || []).length;
-        let bDepth = (b.path.match(/\//g) || []).length;
-
-        if (aDepth < bDepth) {
-            return -1;
-        }
-        if (aDepth > bDepth) {
-            return 1;
-        }
-        return 0;
     }
 
     function updateReply(event) {
@@ -113,7 +95,7 @@
         selectedId: 0,
     };
 
-    let fetchedPosts = [];
+    let fetchedPostsList = [];
     let fetchedPostTree = [];
 
     // enables us to reset PostDisplay component https://stackoverflow.com/a/63737335
@@ -163,7 +145,6 @@ https://github.com/carbon-design-system/carbon-components-svelte/issues/786
         <SkeletonText paragraph/>
     {:else}
         <PostDisplay
-                fetchedPosts={fetchedPosts}
                 fetchedPostTree={fetchedPostTree}
                 BACKEND_BASE_URL={BACKEND_BASE_URL}
                 on:updateReply={updateReply}
