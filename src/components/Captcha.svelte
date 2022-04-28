@@ -12,8 +12,9 @@
     });
 
     function captchaComplete() {
-        dispatch("captchaComplete", {
-            captchaResponse: grecaptcha.getResponse()
+        dispatch("postEvent", {
+            captchaIncluded: true,
+            captchaResponse: grecaptcha.getResponse(),
         });
 
         grecaptcha.reset();

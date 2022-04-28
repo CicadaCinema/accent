@@ -1,20 +1,34 @@
 <script lang="ts">
+    import {createEventDispatcher} from 'svelte';
+
     import {Button, TextInput} from "carbon-components-svelte";
 
     import {submissionValue, selectedId} from '../stores.ts';
 
+    export let isCaptchaRequired: boolean;
     export let isCaptchaOpen: boolean;
     export let isLearnMoreOpen: boolean;
     export let isDisabled: boolean;
+    export let isVerified: boolean;
 
     let submissionInvalid = false;
     let submissionInvalidText = "";
 
-    function submitButtonCallback() {
-        if (!submissionInvalid) {
-            isCaptchaOpen = true
+    function dispatchPost() {
+        if (submissionInvalid) {
+            return;
+        } else if (isCaptchaRequired) {
+            // trigger the post by opening captcha modal and sending an event from Captcha
+            isCaptchaOpen = true;
+        } else {
+            // trigger the post by sending an event directly
+            dispatch("postEvent", {
+                captchaIncluded: false,
+            });
         }
     }
+
+    const dispatch = createEventDispatcher();
 </script>
 
 <TextInput
@@ -33,13 +47,14 @@
 			}
 		}}
 />
-
 <Button
+        skeleton={!isVerified}
         disabled={isDisabled || submissionInvalid}
-        on:click={submitButtonCallback}
+        on:click={dispatchPost}
 >
     {$selectedId !== 0 ? "Reply" : "Submit"}
 </Button>
+
 
 <Button kind="tertiary" on:click={() => {isLearnMoreOpen = true}}>
     Learn more

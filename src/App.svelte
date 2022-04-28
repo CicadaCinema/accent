@@ -1,4 +1,5 @@
 <script lang="ts">
+    import {onMount} from "svelte";
     import {fade, fly} from 'svelte/transition';
     import {expoOut} from "svelte/easing";
 
@@ -13,13 +14,17 @@
 
     import {voteAction, voteId, voteStatus, selectedId, submissionValue} from './stores.ts';
 
-    function triggerSubmission(event) {
+    function performPost(event) {
         fetch(`${BACKEND_BASE_URL}/api/post`, {
             method: "POST",
-            headers: {
-                "captcha-token": event.detail.captchaResponse,
-                "content-type": "application/json",
-            },
+            headers: event.detail.captchaIncluded
+                ? {
+                    "captcha-token": event.detail.captchaResponse,
+                    "content-type": "application/json",
+                }
+                : {
+                    "content-type": "application/json",
+                },
             body: JSON.stringify(
                 $selectedId === 0
                     ? {postContent: $submissionValue}
@@ -65,6 +70,9 @@
                 uiStatus.isPostLoading = false;
                 uiStatus.isPostSubmitVisible = true;
                 uiStatus.isSubmitDisabled = true;
+                uiStatus.isVerified = false;
+                uiStatus.isCaptchaRequired = null;
+                performVerify();
             })
             // unexpected error in request
             .catch((error) => {
@@ -114,6 +122,33 @@
             });
     }
 
+    function performVerify() {
+        fetch(`${BACKEND_BASE_URL}/api/verify`, {
+            method: "GET",
+        })
+            .then((response) => {
+                uiStatus.isErrorMessageOpen = !response.ok;
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    return response.text();
+                }
+            })
+            .then((data) => {
+                if (uiStatus.isErrorMessageOpen) {
+                    uiStatus.errorMessageText = data;
+                } else {
+                    uiStatus.isVerified = true;
+                    uiStatus.isCaptchaRequired = data["captchaRequired"];
+                }
+            })
+            .catch((error) => {
+                // TODO: what should happen here?
+                console.log(error);
+                return;
+            });
+    }
+
     let uiStatus = {
         // modals
         isLearnMoreOpen: false,
@@ -125,12 +160,16 @@
         isPostLoading: false,
         isSubmitDisabled: false,
         isPostSubmitVisible: true,
+        isVerified: false,
+        isCaptchaRequired: null,
     };
 
     let fetchedPostTree = [];
 
     // enables us to reset PostDisplayParent component https://stackoverflow.com/a/63737335
     let uniquePostKey = {};
+
+    onMount(performVerify);
 </script>
 
 <svelte:head>
@@ -188,6 +227,9 @@ https://github.com/carbon-design-system/carbon-components-svelte/issues/786
                     on:introend="{() => uiStatus.isSubmitDisabled=false}"
             >
                 <PostSubmit
+                        isCaptchaRequired={uiStatus.isCaptchaRequired}
+                        on:postEvent={performPost}
+                        isVerified={uiStatus.isVerified}
                         isDisabled={uiStatus.isSubmitDisabled}
                         bind:isCaptchaOpen={uiStatus.isCaptchaOpen}
                         bind:isLearnMoreOpen={uiStatus.isLearnMoreOpen}
@@ -214,5 +256,5 @@ https://github.com/carbon-design-system/carbon-components-svelte/issues/786
     >
         <p>{uiStatus.errorMessageText}</p>
     </Modal>
-    <Captcha on:captchaComplete={triggerSubmission} bind:isCaptchaOpen={uiStatus.isCaptchaOpen}/>
+    <Captcha on:postEvent={performPost} bind:isCaptchaOpen={uiStatus.isCaptchaOpen}/>
 </Content>
