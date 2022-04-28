@@ -1,7 +1,6 @@
 // https://typedoc.org/guides/doccomments/
 
-/** base URL of the Dialect API backend */
-export const BACKEND_BASE_URL = "http://localhost:8080";
+
 
 /**
  * Parses a list of items into a tree-like structure, based on the `path` and `id` properties of the elements of the

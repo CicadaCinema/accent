@@ -11,7 +11,8 @@
     import Captcha from "./components/Captcha.svelte";
     import PostSubmit from "./components/PostSubmit.svelte";
 
-    import {BACKEND_BASE_URL, parseTree} from "./utils.ts";
+    import {parseTree} from "./utils.ts";
+    import {BACKEND_BASE_URL} from "./config.ts";
     import {voteAction, voteId, voteStatus, selectedId, submissionValue, errorModal} from './stores.ts';
 
     function performPost(event) {
