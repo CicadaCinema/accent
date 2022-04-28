@@ -6,13 +6,13 @@
     import "carbon-components-svelte/css/all.css";
     import {Content, Modal, SkeletonText, Tile} from "carbon-components-svelte";
 
-    import {BACKEND_BASE_URL} from './Config.svelte'
     import PostDisplayParent from "./components/PostDisplayParent.svelte";
     import LearnMore from "./components/LearnMore.svelte";
     import Captcha from "./components/Captcha.svelte";
     import PostSubmit from "./components/PostSubmit.svelte";
 
-    import {voteAction, voteId, voteStatus, selectedId, submissionValue} from './stores.ts';
+    import {BACKEND_BASE_URL, parseTree} from "./utils.ts";
+    import {voteAction, voteId, voteStatus, selectedId, submissionValue, errorModal} from './stores.ts';
 
     function performPost(event) {
         fetch(`${BACKEND_BASE_URL}/api/post`, {
@@ -34,56 +34,39 @@
                     }
             ),
         })
-            .then((response) => {
-                uiStatus.isErrorMessageOpen = !response.ok;
-                if (response.ok) {
-                    return response.json();
-                } else {
-                    return response.text();
-                }
-            })
-            .then((data) => {
-                if (uiStatus.isErrorMessageOpen) {
-                    uiStatus.errorMessageText = data;
-                } else {
-                    fetchedPostTree = [];
-
-                    // from https://stackoverflow.com/a/59049749
-                    data.reduce((r, post) => {
-                        post.path.slice(1).split('/').reduce((o, id) => {
-                            let temp = (o.children = o.children || []).find(q => q.id === id);
-                            if (!temp) o.children.push(temp = {id: id, content: post.postContent});
-                            return temp;
-                        }, r);
-                        return r;
-                    }, {children: fetchedPostTree});
-
-                    // console.log(JSON.stringify(fetchedPostTree, null, 2));
-                }
-
-                // reset UI status
-                voteAction.set(false);
-                voteId.set(0);
-                voteStatus.set(0);
-                selectedId.set(0);
-
+            .then(async (response) => {
+                // regardless of whether the post was rejected or not,
+                // stop loading animation and restore initial state
                 uiStatus.isPostLoading = false;
                 uiStatus.isPostSubmitVisible = true;
-                uiStatus.isSubmitDisabled = true;
-                uiStatus.isVerified = false;
-                uiStatus.isCaptchaRequired = null;
-                performVerify();
+
+                if (response.ok) {
+                    fetchedPostTree = parseTree(await response.json());
+                    console.log(JSON.stringify(fetchedPostTree, null, 2));
+
+                    // reset UI status
+                    voteAction.set(false);
+                    voteId.set(0);
+                    voteStatus.set(0);
+                    selectedId.set(0);
+
+                    uiStatus.isSubmitDisabled = true;
+                    uiStatus.isVerified = false;
+                    uiStatus.isCaptchaRequired = null;
+                    performVerify();
+                } else {
+                    errorModal.displayError("Could not submit post", await response.text());
+                }
             })
-            // unexpected error in request
             .catch((error) => {
-                // TODO: what should happen here?
+                errorModal.displayError("Error submitting post", error.stack);
                 console.log(error);
                 return;
             });
 
+        // TODO: sort out these uiStatus assignments - I'm pretty sure we don't need this many of them, some must be redundant
         uniquePostKey = {};
         submissionValue.set("");
-        uiStatus.errorMessageText = "";
         uiStatus.isCaptchaOpen = false;
         uiStatus.isPostSubmitVisible = false;
         uiStatus.isPostLoading = true;
@@ -101,22 +84,16 @@
             },
             body: JSON.stringify({postId: Number($voteId), voteAction: $voteAction}),
         })
-            .then((response) => {
-                uiStatus.isErrorMessageOpen = !response.ok;
+            .then(async (response) => {
                 if (response.ok) {
                     voteStatus.set(2);
                 } else {
                     voteStatus.set(0);
-                    return response.text();
-                }
-            })
-            .then((data) => {
-                if (uiStatus.isErrorMessageOpen) {
-                    uiStatus.errorMessageText = data;
+                    errorModal.displayError("Could not vote on post", await response.text());
                 }
             })
             .catch((error) => {
-                // TODO: what should happen here?
+                errorModal.displayError("Error voting on post", error.stack);
                 console.log(error);
                 return;
             });
@@ -126,24 +103,17 @@
         fetch(`${BACKEND_BASE_URL}/api/verify`, {
             method: "GET",
         })
-            .then((response) => {
-                uiStatus.isErrorMessageOpen = !response.ok;
+            .then(async (response) => {
                 if (response.ok) {
-                    return response.json();
-                } else {
-                    return response.text();
-                }
-            })
-            .then((data) => {
-                if (uiStatus.isErrorMessageOpen) {
-                    uiStatus.errorMessageText = data;
-                } else {
+                    let data = await response.json();
                     uiStatus.isVerified = true;
                     uiStatus.isCaptchaRequired = data["captchaRequired"];
+                } else {
+                    errorModal.displayError("Could not verify user", await response.text());
                 }
             })
             .catch((error) => {
-                // TODO: what should happen here?
+                errorModal.displayError("Error verifying user", error.stack);
                 console.log(error);
                 return;
             });
@@ -153,8 +123,6 @@
         // modals
         isLearnMoreOpen: false,
         isCaptchaOpen: false,
-        isErrorMessageOpen: false,
-        errorMessageText: "",
 
         // visibility of elements
         isPostLoading: false,
@@ -164,7 +132,7 @@
         isCaptchaRequired: null,
     };
 
-    let fetchedPostTree = [];
+    let fetchedPostTree = {};
 
     // enables us to reset PostDisplayParent component https://stackoverflow.com/a/63737335
     let uniquePostKey = {};
@@ -251,10 +219,10 @@ https://github.com/carbon-design-system/carbon-components-svelte/issues/786
     -->
     <Modal
             passiveModal
-            bind:open={uiStatus.isErrorMessageOpen}
-            modalHeading="Error posting"
+            bind:open={$errorModal.visible}
+            modalHeading={$errorModal.title}
     >
-        <p>{uiStatus.errorMessageText}</p>
+        <p>{$errorModal.body}</p>
     </Modal>
     <Captcha on:postEvent={performPost} bind:isCaptchaOpen={uiStatus.isCaptchaOpen}/>
 </Content>

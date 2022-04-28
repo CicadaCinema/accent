@@ -9,7 +9,7 @@
     let isShaking = false;
 </script>
 
-{#if fetchedPostTree.length !== 0}
+{#if Object.entries(fetchedPostTree).length !== 0}
     <div
             class:shaking="{isShaking}"
             in:fly="{{ y: -500, duration: 1200, easing:expoIn }}"
@@ -20,9 +20,9 @@
         <div class="parent-container">
             <PostLine
                     on:voteEvent
-                    content={fetchedPostTree[0].content}
-                    id={fetchedPostTree[0].id}
-                    children={fetchedPostTree[0].children}
+                    content={fetchedPostTree.content}
+                    id={fetchedPostTree.id}
+                    children={fetchedPostTree.children}
             />
         </div>
     </div>
