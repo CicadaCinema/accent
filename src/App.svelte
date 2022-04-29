@@ -4,7 +4,17 @@
     import {expoOut} from "svelte/easing";
 
     import "carbon-components-svelte/css/all.css";
-    import {Content, SkeletonText, Tile} from "carbon-components-svelte";
+    import {
+        Content,
+        Header,
+        SideNav,
+        SideNavDivider,
+        SideNavItems,
+        SideNavLink,
+        SkeletonText,
+        SkipToContent,
+        Tile
+    } from "carbon-components-svelte";
 
     import LearnMore from "./components/modals/LearnMore.svelte";
     import Captcha from "./components/modals/Captcha.svelte";
@@ -155,78 +165,73 @@
 </svelte:head>
 
 <!--
-there's a bug that makes a vertical scrollbar appear when a Header is added...
-let's leave it out for now
-
-strictly speaking this SideNav should be outside the Header (after Header, before Content)
-it is done this way to avoid a visual glitch
+Header is annoying to use...
 https://github.com/carbon-design-system/carbon-components-svelte/issues/786
+https://github.com/carbon-design-system/carbon-components-svelte/issues/245
 -->
-<!--
-<Header platformName="Accent" expandedByDefault={false} bind:isSideNavOpen={uiStatus.isSideNavOpen}>
-    <div slot="skip-to-content">
+
+<Header company="" platformName="Accent" bind:isSideNavOpen={uiStatus.isSideNavOpen}>
+    <svelte:fragment slot="skip-to-content">
         <SkipToContent/>
-    </div>
-
-    <HeaderNav>
-        <HeaderNavItem href="/" text="Link 1"/>
-        <HeaderNavItem href="/" text="Link 2"/>
-        <HeaderNavItem href="/" text="Link 3"/>
-    </HeaderNav>
-
-
+    </svelte:fragment>
     <SideNav bind:isOpen={uiStatus.isSideNavOpen}>
         <SideNavItems>
-            <SideNavLink href="/" text="Link 1"/>
-            <SideNavLink href="/" text="Link 2"/>
-            <SideNavLink href="/" text="Link 3"/>
+            <SideNavLink text="Home" href="/"/>
+            <SideNavDivider/>
+            <SideNavLink text="Why?" href="/"/>
+            <SideNavLink text="Source Code" href="/"/>
         </SideNavItems>
     </SideNav>
 </Header>
--->
 
-<Content>
-    <Tile style="margin-bottom: 2rem;">
-        <marquee><h3>Make a post - see a post!</h3></marquee>
-    </Tile>
-    {#if uiStatus.isPostLoading}
-        <SkeletonText paragraph/>
-    {:else}
-        <PostDisplayParent
-                on:voteEvent={performVote}
-                fetchedPostTree={fetchedPostTree}
-        />
-    {/if}
-    {#if uiStatus.isPostSubmitVisible}
-        {#key uniquePostKey}
-            <div
-                    in:fade="{{ duration: 15000 }}"
-                    out:fly="{{ y: -500, duration: 1200, easing:expoOut }}"
-                    on:introend="{() => uiStatus.isSubmitDisabled=false}"
-            >
-                <PostSubmit
-                        isCaptchaRequired={uiStatus.isCaptchaRequired}
-                        on:postEvent={performPost}
-                        isVerified={uiStatus.isVerified}
-                        isDisabled={uiStatus.isSubmitDisabled}
-                        bind:isCaptchaOpen={uiStatus.isCaptchaOpen}
-                        bind:isLearnMoreOpen={uiStatus.isLearnMoreOpen}
-                />
-            </div>
-        {/key}
-    {/if}
-
-    <LearnMore bind:isLearnMoreOpen={uiStatus.isLearnMoreOpen}/>
-    <!--
-    <Modal
-            passiveModal
-            modalHeading="How does it work?"
-            open={true}>
-        <p>
-            Make a post - see a post!
-        </p>
-    </Modal>
-    -->
-    <ErrorModal/>
-    <Captcha on:postEvent={performPost} bind:isCaptchaOpen={uiStatus.isCaptchaOpen}/>
+<!-- margin-top is 3rem by default for the Container component, which introduces a scrollbar - so we add this to the padding instead -->
+<Content style="margin-top: 0; padding-top: 5rem;">
+    <div class="content-container">
+        <!-- large scrolling banner -->
+        <Tile style="margin-bottom: 2rem;">
+            <marquee><h3>Make a post - see a post!</h3></marquee>
+        </Tile>
+        <!-- area for received posts -->
+        {#if uiStatus.isPostLoading}
+            <SkeletonText paragraph/>
+        {:else}
+            <PostDisplayParent
+                    on:voteEvent={performVote}
+                    fetchedPostTree={fetchedPostTree}
+            />
+        {/if}
+        <!-- post composer area -->
+        {#if uiStatus.isPostSubmitVisible}
+            {#key uniquePostKey}
+                <div
+                        in:fade="{{ duration: 15000 }}"
+                        out:fly="{{ y: -500, duration: 1200, easing:expoOut }}"
+                        on:introend="{() => uiStatus.isSubmitDisabled=false}"
+                >
+                    <PostSubmit
+                            isCaptchaRequired={uiStatus.isCaptchaRequired}
+                            on:postEvent={performPost}
+                            isVerified={uiStatus.isVerified}
+                            isDisabled={uiStatus.isSubmitDisabled}
+                            bind:isCaptchaOpen={uiStatus.isCaptchaOpen}
+                            bind:isLearnMoreOpen={uiStatus.isLearnMoreOpen}
+                    />
+                </div>
+            {/key}
+        {/if}
+    </div>
 </Content>
+
+<!-- modals -->
+<LearnMore bind:isLearnMoreOpen={uiStatus.isLearnMoreOpen}/>
+<ErrorModal/>
+<Captcha on:postEvent={performPost} bind:isCaptchaOpen={uiStatus.isCaptchaOpen}/>
+
+<!-- we must manually insert padding with a media query to stop the expanded sidebar from overlapping the site content -->
+<style>
+    @media (min-width: 1056px) {
+        .content-container {
+            padding-left: 16rem;
+        }
+    }
+</style>
