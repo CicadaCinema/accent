@@ -5,7 +5,7 @@
 
     export let content: string;
     export let id: number;
-    export let children;
+    export let children: any[];
 </script>
 
 <!-- this post's elements (text content and corresponding buttons) -->

@@ -5,6 +5,9 @@ export const voteAction = writable(false); // false - dislike, true - like
 export const voteId = writable(0);
 export const voteStatus = writable(0); // 0 - no vote, 1 - vote loading, 2 - vote processed
 
+// votes
+export const voteMap = writable(new Map());
+
 // reply button
 export const selectedId = writable(0);
 

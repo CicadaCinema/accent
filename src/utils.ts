@@ -1,7 +1,5 @@
 // https://typedoc.org/guides/doccomments/
 
-
-
 /**
  * Parses a list of items into a tree-like structure, based on the `path` and `id` properties of the elements of the
  * list.
@@ -70,17 +68,17 @@
  * ```
  */
 export function parseTree(inputList: any[]) {
-    let treeTemp = [];
+    let workingTree = [];
 
     // from https://stackoverflow.com/a/59049749
     inputList.reduce((r, post) => {
         post.path.slice(1).split('/').reduce((o, id) => {
             let temp = (o.children = o.children || []).find(q => q.id === id);
-            if (!temp) o.children.push(temp = {id: id, content: post.postContent});
+            if (!temp) o.children.push(temp = {id: id, content: post.postContent, likes: post.likes, dislikes: post.dislikes});
             return temp;
         }, r);
         return r;
-    }, {children: treeTemp});
+    }, {children: workingTree});
 
-    return treeTemp[0];
+    return workingTree[0];
 }

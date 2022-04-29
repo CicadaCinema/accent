@@ -13,7 +13,7 @@
 
     import {parseTree} from "./utils.ts";
     import {BACKEND_BASE_URL} from "./config.ts";
-    import {voteAction, voteId, voteStatus, selectedId, submissionValue, errorModal} from './stores.ts';
+    import {voteAction, voteId, voteStatus, selectedId, submissionValue, errorModal, voteMap} from './stores.ts';
 
     function performPost(event) {
         fetch(`${BACKEND_BASE_URL}/api/post`, {
@@ -43,13 +43,15 @@
 
                 if (response.ok) {
                     fetchedPostTree = parseTree(await response.json());
-                    console.log(JSON.stringify(fetchedPostTree, null, 2));
+                    // console.log(JSON.stringify(fetchedPostTree, null, 2));
 
                     // reset UI status
+                    // TODO: do these calls belong outside this if statement?
                     voteAction.set(false);
                     voteId.set(0);
                     voteStatus.set(0);
                     selectedId.set(0);
+                    voteMap.set(new Map());
 
                     uiStatus.isSubmitDisabled = true;
                     uiStatus.isVerified = false;
@@ -88,6 +90,8 @@
             .then(async (response) => {
                 if (response.ok) {
                     voteStatus.set(2);
+                    voteMap.set(new Map((await response.json()).map(i => [i.id, {likes: i.likes, dislikes: i.dislikes}])));
+                    console.log($voteMap);
                 } else {
                     voteStatus.set(0);
                     errorModal.displayError("Could not vote on post", await response.text());
