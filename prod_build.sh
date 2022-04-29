@@ -15,14 +15,14 @@ sed_replacement_recaptcha_site_key_change+=$2
 sed_replacement_recaptcha_site_key_change+='/g'
 
 # create a backup copy of the affected file
-cp src/config.ts src/config.ts.bak
+cp src/lib/config.ts src/lib/config.ts.bak
 
 # perform sed operations
-sed -i "$sed_replacement_base_url_change" src/config.ts
-sed -i "$sed_replacement_recaptcha_site_key_change" src/config.ts
+sed -i "$sed_replacement_base_url_change" src/lib/config.ts
+sed -i "$sed_replacement_recaptcha_site_key_change" src/lib/config.ts
 
 # show diff (viewable in build logs)
-diff src/config.ts src/config.ts.bak
+diff src/lib/config.ts src/lib/config.ts.bak
 
 # the backup is now redundant
-rm src/config.ts.bak
+rm src/lib/config.ts.bak
