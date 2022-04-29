@@ -1,7 +1,7 @@
 <script lang="ts">
     import {createEventDispatcher, onDestroy, onMount} from "svelte";
     import {Modal} from "carbon-components-svelte";
-    import {RECAPTCHA_SITE_KEY} from "../config.ts";
+    import {RECAPTCHA_SITE_KEY} from "../../config.ts";
 
     // required so that the captcha can find the captchaComplete function
     // https://stackoverflow.com/questions/59546779/

@@ -3,7 +3,7 @@
 
     import {Button, TextInput} from "carbon-components-svelte";
 
-    import {submissionValue, selectedId} from '../stores.ts';
+    import {selectedId, submissionValue} from '../stores.ts';
 
     export let isCaptchaRequired: boolean;
     export let isCaptchaOpen: boolean;

@@ -8,7 +8,7 @@
     import ThumbsDown16 from "carbon-icons-svelte/lib/ThumbsDown16";
     import ThumbsDownFilled16 from "carbon-icons-svelte/lib/ThumbsDownFilled16";
 
-    import {voteAction, voteId, voteStatus, selectedId, voteMap} from '../stores.ts';
+    import {selectedId, voteAction, voteId, voteMap, voteStatus} from '../../stores.ts';
 
     export let content: string;
     export let id: number;

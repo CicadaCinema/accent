@@ -4,16 +4,17 @@
     import {expoOut} from "svelte/easing";
 
     import "carbon-components-svelte/css/all.css";
-    import {Content, Modal, SkeletonText, Tile} from "carbon-components-svelte";
+    import {Content, SkeletonText, Tile} from "carbon-components-svelte";
 
-    import PostDisplayParent from "./components/PostDisplayParent.svelte";
-    import LearnMore from "./components/LearnMore.svelte";
-    import Captcha from "./components/Captcha.svelte";
+    import LearnMore from "./components/modals/LearnMore.svelte";
+    import Captcha from "./components/modals/Captcha.svelte";
+    import ErrorModal from "./components/modals/ErrorModal.svelte";
+    import PostDisplayParent from "./components/postview/PostDisplayParent.svelte";
     import PostSubmit from "./components/PostSubmit.svelte";
 
     import {parseTree} from "./utils.ts";
     import {BACKEND_BASE_URL} from "./config.ts";
-    import {voteAction, voteId, voteStatus, selectedId, submissionValue, errorModal, voteMap} from './stores.ts';
+    import {errorModal, selectedId, submissionValue, voteAction, voteId, voteMap, voteStatus} from './stores.ts';
 
     function performPost(event) {
         fetch(`${BACKEND_BASE_URL}/api/post`, {
@@ -90,8 +91,12 @@
             .then(async (response) => {
                 if (response.ok) {
                     voteStatus.set(2);
-                    voteMap.set(new Map((await response.json()).map(i => [i.id, {likes: i.likes, dislikes: i.dislikes}])));
-                    console.log($voteMap);
+                    // process votes, save them to a store
+                    voteMap.set(new Map((await response.json()).map(i => [i.id, {
+                        likes: i.likes,
+                        dislikes: i.dislikes
+                    }])));
+                    // console.log($voteMap);
                 } else {
                     voteStatus.set(0);
                     errorModal.displayError("Could not vote on post", await response.text());
@@ -222,12 +227,6 @@ https://github.com/carbon-design-system/carbon-components-svelte/issues/786
         </p>
     </Modal>
     -->
-    <Modal
-            passiveModal
-            bind:open={$errorModal.visible}
-            modalHeading={$errorModal.title}
-    >
-        <p>{$errorModal.body}</p>
-    </Modal>
+    <ErrorModal/>
     <Captcha on:postEvent={performPost} bind:isCaptchaOpen={uiStatus.isCaptchaOpen}/>
 </Content>
