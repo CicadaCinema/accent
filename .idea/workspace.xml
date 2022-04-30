@@ -1,19 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="a39b58a1-36a7-42fb-b1ce-a01720fb337b" name="Changes" comment="migrate to sveltekit">
-      <change afterPath="$PROJECT_DIR$/src/hooks.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/routes/__layout.svelte" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/routes/about/index.svelte" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/routes/source/index.svelte" afterDir="false" />
+    <list default="true" id="a39b58a1-36a7-42fb-b1ce-a01720fb337b" name="Changes" comment="move Header and other persistent elements into __layout.svelte so they appear on every page&#10;also populate the two additional info pages&#10;also fix styling errors and inconsistencies">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/prod_build.sh" beforeDir="false" afterPath="$PROJECT_DIR$/prod_build.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/app.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/app.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/components/modals/Captcha.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/components/modals/Captcha.svelte" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/components/postview/PostDisplayParent.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/components/postview/PostDisplayParent.svelte" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/components/postview/PostLineElements.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/components/postview/PostLineElements.svelte" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/config.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/routes/__layout.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/src/routes/__layout.svelte" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/routes/about/index.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/src/routes/about/index.svelte" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/routes/index.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/src/routes/index.svelte" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/yarn.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/routes/source/index.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/src/routes/source/index.svelte" afterDir="false" />
     </list>
-    <list id="b4cbe30b-0733-4d91-87fe-23e45c5bea76" name="DO NOT COMMIT" comment="" />
+    <list id="b4cbe30b-0733-4d91-87fe-23e45c5bea76" name="DO NOT COMMIT" comment="">
+      <change beforePath="$PROJECT_DIR$/src/lib/config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/config.ts" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -37,6 +39,14 @@
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="LineStatusTrackerManager">
+    <file path="$PROJECT_DIR$/src/lib/config.ts">
+      <ranges>
+        <range start1="2" end1="2" start2="2" end2="7" changelist="a39b58a1-36a7-42fb-b1ce-a01720fb337b" />
+        <range start1="4" end1="5" start2="9" end2="10" changelist="b4cbe30b-0733-4d91-87fe-23e45c5bea76" />
+      </ranges>
+    </file>
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -105,7 +115,8 @@
       <workItem from="1651150951832" duration="31935000" />
       <workItem from="1651240664863" duration="13939000" />
       <workItem from="1651271820617" duration="436000" />
-      <workItem from="1651272274873" duration="2082000" />
+      <workItem from="1651272274873" duration="7272000" />
+      <workItem from="1651356993001" duration="1372000" />
     </task>
     <task id="LOCAL-00001" summary="clean up names, add comments, remove dead code">
       <created>1651071013101</created>
@@ -205,7 +216,14 @@
       <option name="project" value="LOCAL" />
       <updated>1651242501623</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="migrate to sveltekit">
+      <created>1651274625724</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1651274625724</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -247,7 +265,8 @@
     <MESSAGE value="add sidebar to prepare migrating to sveltekit" />
     <MESSAGE value="begin sveltekit migration&#10;replace site with skeleton template" />
     <MESSAGE value="migrate to sveltekit" />
-    <option name="LAST_COMMIT_MESSAGE" value="migrate to sveltekit" />
+    <MESSAGE value="move Header and other persistent elements into __layout.svelte so they appear on every page&#10;also populate the two additional info pages&#10;also fix styling errors and inconsistencies" />
+    <option name="LAST_COMMIT_MESSAGE" value="move Header and other persistent elements into __layout.svelte so they appear on every page&#10;also populate the two additional info pages&#10;also fix styling errors and inconsistencies" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand>

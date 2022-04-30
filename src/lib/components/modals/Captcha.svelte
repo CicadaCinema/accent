@@ -1,4 +1,6 @@
-
+<svelte:head>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</svelte:head>
 
 <script lang="ts">
     import {createEventDispatcher, onDestroy, onMount} from "svelte";

@@ -30,7 +30,7 @@
 
 <style>
     .parent-container {
-        margin: 0.2rem 0.5rem;
+        margin-bottom: 2rem;
         border: 1px solid var(--cds-interactive-04);
     }
 

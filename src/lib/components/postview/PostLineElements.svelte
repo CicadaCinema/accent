@@ -92,7 +92,7 @@
 </div>
 <style>
     p {
-        margin: 0.7rem 0 0 0.5rem;
+        margin: 0.7rem 0 0.7rem 0.5rem;
     }
 
     div {

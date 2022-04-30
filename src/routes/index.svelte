@@ -1,10 +1,3 @@
-<script context="module">
-    export const ssr = false;
-    export const router = true;
-    export const hydrate = true;
-    export const prerender = true;
-</script>
-
 <script lang="ts">
     import {onMount} from "svelte";
     import {fade, fly} from 'svelte/transition';
@@ -12,14 +5,7 @@
 
     import "carbon-components-svelte/css/all.css";
     import {
-        Content,
-        Header,
-        SideNav,
-        SideNavDivider,
-        SideNavItems,
-        SideNavLink,
         SkeletonText,
-        SkipToContent,
         Tile
     } from "carbon-components-svelte";
 
@@ -167,79 +153,45 @@
     onMount(performVerify);
 </script>
 
-<svelte:head>
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-</svelte:head>
+<!-- large scrolling banner -->
+<Tile style="margin-bottom: 2rem;">
+    <marquee><h3>Make a post - see a post!</h3></marquee>
+</Tile>
+
+<!-- area for received posts -->
+{#if uiStatus.isPostLoading}
+    <SkeletonText paragraph/>
+{:else}
+    <PostDisplayParent
+            on:voteEvent={performVote}
+            fetchedPostTree={fetchedPostTree}
+    />
+{/if}
 
 <!--
-Header is annoying to use...
-https://github.com/carbon-design-system/carbon-components-svelte/issues/786
-https://github.com/carbon-design-system/carbon-components-svelte/issues/245
+post composer area
+TODO: composer fades in when coming back to / from another route, eg /about, but we need it to only fade after submitting a post
 -->
-
-<Header company="" platformName="Accent" bind:isSideNavOpen={uiStatus.isSideNavOpen}>
-    <svelte:fragment slot="skip-to-content">
-        <SkipToContent/>
-    </svelte:fragment>
-    <SideNav bind:isOpen={uiStatus.isSideNavOpen}>
-        <SideNavItems>
-            <SideNavLink text="Home" href="/"/>
-            <SideNavDivider/>
-            <SideNavLink text="About" href="/about"/>
-            <SideNavLink text="Source Code" href="/source"/>
-        </SideNavItems>
-    </SideNav>
-</Header>
-
-<!-- margin-top is 3rem by default for the Container component, which introduces a scrollbar - so we add this to the padding instead -->
-<Content style="margin-top: 0; padding-top: 5rem;">
-    <div class="content-container">
-        <!-- large scrolling banner -->
-        <Tile style="margin-bottom: 2rem;">
-            <marquee><h3>Make a post - see a post!</h3></marquee>
-        </Tile>
-        <!-- area for received posts -->
-        {#if uiStatus.isPostLoading}
-            <SkeletonText paragraph/>
-        {:else}
-            <PostDisplayParent
-                    on:voteEvent={performVote}
-                    fetchedPostTree={fetchedPostTree}
+{#if uiStatus.isPostSubmitVisible}
+    {#key uniquePostKey}
+        <div
+                in:fade="{{ duration: 15000 }}"
+                out:fly="{{ y: -500, duration: 1200, easing:expoOut }}"
+                on:introend="{() => uiStatus.isSubmitDisabled=false}"
+        >
+            <PostSubmit
+                    isCaptchaRequired={uiStatus.isCaptchaRequired}
+                    on:postEvent={performPost}
+                    isVerified={uiStatus.isVerified}
+                    isDisabled={uiStatus.isSubmitDisabled}
+                    bind:isCaptchaOpen={uiStatus.isCaptchaOpen}
+                    bind:isLearnMoreOpen={uiStatus.isLearnMoreOpen}
             />
-        {/if}
-        <!-- post composer area
-        TODO: composer fades in when coming back to / from another route, eg /about, we need it to only fade when  -->
-        {#if uiStatus.isPostSubmitVisible}
-            {#key uniquePostKey}
-                <div
-                        in:fade="{{ duration: 15000 }}"
-                        out:fly="{{ y: -500, duration: 1200, easing:expoOut }}"
-                        on:introend="{() => uiStatus.isSubmitDisabled=false}"
-                >
-                    <PostSubmit
-                            isCaptchaRequired={uiStatus.isCaptchaRequired}
-                            on:postEvent={performPost}
-                            isVerified={uiStatus.isVerified}
-                            isDisabled={uiStatus.isSubmitDisabled}
-                            bind:isCaptchaOpen={uiStatus.isCaptchaOpen}
-                            bind:isLearnMoreOpen={uiStatus.isLearnMoreOpen}
-                    />
-                </div>
-            {/key}
-        {/if}
-    </div>
-</Content>
+        </div>
+    {/key}
+{/if}
 
 <!-- modals -->
 <LearnMore bind:isLearnMoreOpen={uiStatus.isLearnMoreOpen}/>
 <ErrorModal/>
 <Captcha on:postEvent={performPost} bind:isCaptchaOpen={uiStatus.isCaptchaOpen}/>
-
-<!-- we must manually insert padding with a media query to stop the expanded sidebar from overlapping the site content -->
-<style>
-    @media (min-width: 1056px) {
-        .content-container {
-            padding-left: 16rem;
-        }
-    }
-</style>
