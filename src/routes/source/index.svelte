@@ -10,3 +10,7 @@
 <a href={SERVER_SOURCE_URL}>The Dialect server</a>
 <br>
 <a href={CLIENT_SOURCE_URL}>The Accent client</a>
+
+<h1>Contributing</h1>
+<p>I am actively looking for contributors for the Dialect/Accent project. If you are interested, do not hesitate to
+    submit a pull request or open an issue on the relevant project page.</p>
