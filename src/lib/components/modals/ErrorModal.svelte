@@ -4,6 +4,7 @@
     import {errorModal} from '../../stores';
 </script>
 
+<!-- TODO: cannot click out of error modal, get 'Uncaught TypeError: errorModal.set is not a function' -->
 <Modal
         passiveModal
         bind:open={$errorModal.visible}
