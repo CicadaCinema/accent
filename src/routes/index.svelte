@@ -72,7 +72,6 @@
             });
 
         // TODO: sort out these uiStatus assignments - I'm pretty sure we don't need this many of them, some must be redundant
-        uniquePostKey = {};
         submissionValue.set("");
         uiStatus.isCaptchaOpen = false;
         uiStatus.isPostSubmitVisible = false;
@@ -147,9 +146,6 @@
 
     let fetchedPostTree = {};
 
-    // enables us to reset PostDisplayParent component https://stackoverflow.com/a/63737335
-    let uniquePostKey = {};
-
     onMount(performVerify);
 </script>
 
@@ -168,27 +164,22 @@
     />
 {/if}
 
-<!--
-post composer area
-TODO: composer fades in when coming back to / from another route, eg /about, but we need it to only fade after submitting a post
--->
+<!-- post composer area -->
 {#if uiStatus.isPostSubmitVisible}
-    {#key uniquePostKey}
-        <div
-                in:fade="{{ duration: 15000 }}"
-                out:fly="{{ y: -500, duration: 1200, easing:expoOut }}"
-                on:introend="{() => uiStatus.isSubmitDisabled=false}"
-        >
-            <PostSubmit
-                    isCaptchaRequired={uiStatus.isCaptchaRequired}
-                    on:postEvent={performPost}
-                    isVerified={uiStatus.isVerified}
-                    isDisabled={uiStatus.isSubmitDisabled}
-                    bind:isCaptchaOpen={uiStatus.isCaptchaOpen}
-                    bind:isLearnMoreOpen={uiStatus.isLearnMoreOpen}
-            />
-        </div>
-    {/key}
+    <div
+            in:fade|local="{{ duration: 15000 }}"
+            out:fly|local="{{ y: -500, duration: 1200, easing:expoOut }}"
+            on:introend="{() => uiStatus.isSubmitDisabled=false}"
+    >
+        <PostSubmit
+                isCaptchaRequired={uiStatus.isCaptchaRequired}
+                on:postEvent={performPost}
+                isVerified={uiStatus.isVerified}
+                isDisabled={uiStatus.isSubmitDisabled}
+                bind:isCaptchaOpen={uiStatus.isCaptchaOpen}
+                bind:isLearnMoreOpen={uiStatus.isLearnMoreOpen}
+        />
+    </div>
 {/if}
 
 <!-- modals -->
