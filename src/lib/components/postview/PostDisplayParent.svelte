@@ -1,6 +1,6 @@
 <script lang="ts">
     import {fly} from 'svelte/transition';
-    import {expoIn} from "svelte/easing";
+    import {expoIn, expoOut} from "svelte/easing";
 
     import PostLine from "./PostLine.svelte";
 
@@ -10,9 +10,11 @@
 </script>
 
 {#if Object.entries(fetchedPostTree).length !== 0}
+    <!-- TODO: wait for 'out' transition to finish before we begin fading 'in' - otherwise the movement is too jerky -->
     <div
             class:shaking="{isShaking}"
             in:fly="{{ y: -500, duration: 1200, easing:expoIn }}"
+            out:fly="{{ y: -500, duration: 1200, easing:expoOut }}"
             on:introend="{() => {
                 isShaking = true;
             }}"

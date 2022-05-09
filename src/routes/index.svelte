@@ -19,6 +19,24 @@
     import {BACKEND_BASE_URL} from "$lib/config";
     import {errorModal, selectedId, submissionValue, voteAction, voteId, voteMap, voteStatus} from '$lib/stores';
 
+    function prepareReply(event) {
+        // add 'dummy' post with id=1 (this is a 'reserved' id - no real post will share it) to fetchedPostList,
+        // with the path of the selected post
+        for (const post of fetchedPostList) {
+            if (post["id"].toString() === $selectedId) {
+                fetchedPostList.push({id: 1, path: post["path"] + "/1", postContent: $submissionValue})
+                break;
+            }
+        }
+        // then, re-create fetchedPostTree again, this time with the new post
+        // this triggers the slide animation in PostLineElements.svelte (for the 'dummy' post)
+        fetchedPostTree = parseTree(fetchedPostList);
+        // wait for slide animation to finish (plus an extra 100ms), then perform reply
+        setTimeout(() => {
+            performPost(event);
+        }, 600);
+    }
+
     function performPost(event) {
         fetch(`${BACKEND_BASE_URL}/api/post`, {
             method: "POST",
@@ -46,7 +64,8 @@
                 uiStatus.isPostSubmitVisible = true;
 
                 if (response.ok) {
-                    fetchedPostTree = parseTree(await response.json());
+                    fetchedPostList = await response.json();
+                    fetchedPostTree = parseTree(fetchedPostList);
                     // console.log(JSON.stringify(fetchedPostTree, null, 2));
 
                     // reset UI status
@@ -144,6 +163,7 @@
         isCaptchaRequired: null,
     };
 
+    let fetchedPostList = [];
     let fetchedPostTree = {};
 
     onMount(performVerify);
@@ -166,6 +186,7 @@
 
 <!-- post composer area -->
 {#if uiStatus.isPostSubmitVisible}
+    <!-- TODO: wait for 'out' transition to finish before we begin fading 'in' - otherwise the movement is too jerky -->
     <div
             in:fade|local="{{ duration: 15000 }}"
             out:fly|local="{{ y: -500, duration: 1200, easing:expoOut }}"
@@ -174,6 +195,7 @@
         <PostSubmit
                 isCaptchaRequired={uiStatus.isCaptchaRequired}
                 on:postEvent={performPost}
+                on:replyEvent={prepareReply}
                 isVerified={uiStatus.isVerified}
                 isDisabled={uiStatus.isSubmitDisabled}
                 bind:isCaptchaOpen={uiStatus.isCaptchaOpen}
@@ -185,4 +207,4 @@
 <!-- modals -->
 <LearnMore bind:isLearnMoreOpen={uiStatus.isLearnMoreOpen}/>
 <ErrorModal/>
-<Captcha on:postEvent={performPost} bind:isCaptchaOpen={uiStatus.isCaptchaOpen}/>
+<Captcha on:postEvent={performPost} on:replyEvent={prepareReply} bind:isCaptchaOpen={uiStatus.isCaptchaOpen}/>

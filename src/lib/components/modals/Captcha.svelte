@@ -6,6 +6,7 @@
     import {createEventDispatcher, onDestroy, onMount} from "svelte";
     import {Modal} from "carbon-components-svelte";
     import {RECAPTCHA_SITE_KEY} from "../../config";
+    import {selectedId} from "../../stores";
 
     // required so that the captcha can find the captchaComplete function
     // https://stackoverflow.com/questions/59546779/
@@ -18,10 +19,17 @@
     });
 
     function captchaComplete() {
-        dispatch("postEvent", {
-            captchaIncluded: true,
-            captchaResponse: grecaptcha.getResponse(),
-        });
+        if ($selectedId === 0) {
+            dispatch("postEvent", {
+                captchaIncluded: true,
+                captchaResponse: grecaptcha.getResponse(),
+            });
+        } else {
+            dispatch("replyEvent", {
+                captchaIncluded: true,
+                captchaResponse: grecaptcha.getResponse(),
+            });
+        }
 
         grecaptcha.reset();
     }

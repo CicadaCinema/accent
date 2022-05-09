@@ -21,10 +21,16 @@
             // trigger the post by opening captcha modal and sending an event from Captcha
             isCaptchaOpen = true;
         } else {
-            // trigger the post by sending an event directly
-            dispatch("postEvent", {
-                captchaIncluded: false,
-            });
+            if ($selectedId === 0) {
+                // trigger the post by sending an event directly
+                dispatch("postEvent", {
+                    captchaIncluded: false,
+                });
+            } else {
+                dispatch("replyEvent", {
+                    captchaIncluded: false,
+                });
+            }
         }
     }
 

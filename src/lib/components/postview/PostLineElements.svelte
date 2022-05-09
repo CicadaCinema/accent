@@ -1,4 +1,5 @@
 <script lang="ts">
+    import {slide} from 'svelte/transition';
     import {createEventDispatcher} from 'svelte';
 
     import {Button, InlineLoading} from "carbon-components-svelte";
@@ -41,7 +42,11 @@
     const dispatch = createEventDispatcher();
 </script>
 
-<div>
+<!-- this slide animation is actually really beneficial!
+ * it slides the composer down smoothly when a new thread is loaded
+ * it also makes for a smooth animation when a reply is submitted by the user (before the whole thread moves up
+ and disappears)-->
+<div in:slide>
     <p style="margin-right: auto;">{content}</p>
     {#if displayVotes}
         <p title="likes | dislikes" style="margin-right: 0.5rem;">{likeCount} | {dislikeCount * -1}</p>
@@ -90,6 +95,7 @@
             }}
     />
 </div>
+
 <style>
     p {
         margin: 0.7rem 0 0.7rem 0.5rem;
